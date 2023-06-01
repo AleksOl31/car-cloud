@@ -22,12 +22,12 @@ public class GalileoPackageParser implements PackageParser {
 
     @Override
     public void parse(ByteBuf byteBuf) {
-        Navigation navigation = new Navigation();
+        Navigation navigation = null;
         byteBuf.resetReaderIndex();
         int firstTagInPackage = byteBuf.getByte(0);
         while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
-            int tag = byteBuf.readByte();
-            log.debug("Tag {}, first tag {}", Integer.toHexString(tag), Integer.toHexString(firstTagInPackage));
+            int tag = byteBuf.readUnsignedByte();
+//            log.debug("Tag {}, first tag {}", Integer.toHexString(tag), Integer.toHexString(firstTagInPackage));
             if (tag == firstTagInPackage) {
                 log.debug("Navigation data {}", navigation);
                 navigation = new Navigation();
@@ -46,12 +46,13 @@ public class GalileoPackageParser implements PackageParser {
                 navigation.setDate(galileoTagDecoder.tag20(byteBuf));
                 break;
             case 0x30:
-                Location location = galileoTagDecoder.tag30(byteBuf);
-                log.debug("Location {}", location);
-                navigation.setLocation(location);
+                navigation.setLocation(galileoTagDecoder.tag30(byteBuf));
+                break;
+            case 0xfe:
+//                galileoTagDecoder.tagFE(byteBuf);
+                GalileoTagDecoder.tagFE(byteBuf);
                 break;
             default:
-                System.out.println(Integer.toHexString(tag));
                 byteBuf.skipBytes(galileoTagDecoder.length(tag));
         }
     }

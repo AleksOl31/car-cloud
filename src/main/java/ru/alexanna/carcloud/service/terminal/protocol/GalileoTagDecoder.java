@@ -110,9 +110,12 @@ public class GalileoTagDecoder {
                 entry(0x6E, 3),
                 entry(0x6F, 3),
                 entry(0x88, 1),
+                entry(0x89, 1),
                 entry(0x8A, 1),
                 entry(0x8B, 1),
                 entry(0x8C, 1),
+                entry(0x78, 2),
+                entry(0x79, 2),
                 entry(0xA0, 1),
                 entry(0xA1, 1),
                 entry(0xA2, 1),
@@ -200,9 +203,6 @@ public class GalileoTagDecoder {
     }
 
     public Location tag30(ByteBuf byteBuf) {
-        for (int i = 0; i < 10; i++) {
-            System.out.print(Integer.toHexString(byteBuf.getUnsignedByte(byteBuf.readerIndex() + i)) + " ");
-        }
         byte firstByte = byteBuf.readByte();
         Integer satellites = firstByte & 0xf;
         Integer correctness = (firstByte & 0xf0) >> 4;
@@ -210,6 +210,12 @@ public class GalileoTagDecoder {
         Double longitude = byteBuf.readIntLE() / 1_000_000.;
         Boolean isCorrect = correctness == 0 || correctness == 2;
         return new Location(latitude, longitude, satellites, correctness, isCorrect);
+    }
+    
+    public static void tagFE(ByteBuf byteBuf) {
+        int extTagLength = byteBuf.readShortLE();
+        //TODO сделать разбор расширенных тэгов. Здесь - временный вариант пропуска байт
+        byteBuf.skipBytes(extTagLength);
     }
 
     /*

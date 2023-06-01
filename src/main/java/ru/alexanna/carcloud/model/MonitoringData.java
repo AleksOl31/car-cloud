@@ -7,7 +7,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MonitoringObject {
+public class MonitoringData {
     private Device device;
     private Navigation navigation;
 }
