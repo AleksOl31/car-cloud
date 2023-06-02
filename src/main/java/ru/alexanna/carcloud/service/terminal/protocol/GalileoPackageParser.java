@@ -5,8 +5,8 @@ import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.alexanna.carcloud.model.MonitoringData;
 import ru.alexanna.carcloud.model.MonitoringPackage;
-import ru.alexanna.carcloud.model.Navigation;
 
 @Slf4j
 @Component
@@ -18,27 +18,27 @@ public class GalileoPackageParser implements PackageParser {
 
     public GalileoPackageParser(GalileoTagDecoder galileoTagDecoder) {
         this.galileoTagDecoder = galileoTagDecoder;
-        monitoringPackage = new MonitoringPackage();
     }
 
     @Override
     public void parse(ByteBuf byteBuf) {
-        Navigation navigation = null;
+        monitoringPackage = new MonitoringPackage();
+        MonitoringData monitoringData = null;
         byteBuf.resetReaderIndex();
         int firstTagInPackage = byteBuf.getByte(0);
         while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
             int tag = byteBuf.readUnsignedByte();
-//            log.debug("Tag {}, first tag {}", Integer.toHexString(tag), Integer.toHexString(firstTagInPackage));
             if (tag == firstTagInPackage) {
-                log.debug("Navigation data {}", navigation);
-                navigation = new Navigation();
+                monitoringPackage.add(monitoringData);
+                monitoringData = new MonitoringData();
             }
-            dataExtractor(tag, byteBuf);
+            dataExtractor(tag, byteBuf, monitoringData);
         }
+        log.debug("{}", monitoringPackage);
         setResponse(byteBuf);
     }
 
-    private void dataExtractor(int tag, ByteBuf byteBuf) {
+    private void dataExtractor(int tag, ByteBuf byteBuf, MonitoringData monitoringData) {
         switch (tag) {
             case 0x01:
                 monitoringPackage.getDevice().setHardVer(galileoTagDecoder.tag01(byteBuf));
@@ -56,20 +56,24 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.getDevice().setRecordNum(galileoTagDecoder.tag10(byteBuf));
                 break;
             case 0x20:
-                navigation.setDate(galileoTagDecoder.tag20(byteBuf));
+                monitoringData.getNavigation().setDate(galileoTagDecoder.tag20(byteBuf));
                 break;
             case 0x30:
-                navigation.setLocation(galileoTagDecoder.tag30(byteBuf));
+                monitoringData.getNavigation().setLocation(galileoTagDecoder.tag30(byteBuf));
                 break;
-
+            case 0x33:
+                GalileoTagDecoder.MotionInfo motionInfo = galileoTagDecoder.tag33(byteBuf);
+                monitoringData.getNavigation().setSpeed(motionInfo.getSpeed());
+                monitoringData.getNavigation().setCourse(motionInfo.getCourse());
+                break;
             case 0xfe:
-//                galileoTagDecoder.tagFE(byteBuf);
-                GalileoTagDecoder.tagFE(byteBuf);
+                galileoTagDecoder.tagFE(byteBuf);
                 break;
             default:
                 byteBuf.skipBytes(galileoTagDecoder.length(tag));
         }
     }
+
     private void setResponse(ByteBuf byteBuf) {
         responseBuf = Unpooled.buffer(3, 3);
         responseBuf.writeByte(0x02);

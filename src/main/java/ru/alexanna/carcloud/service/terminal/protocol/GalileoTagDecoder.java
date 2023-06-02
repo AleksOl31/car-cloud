@@ -1,6 +1,8 @@
 package ru.alexanna.carcloud.service.terminal.protocol;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.alexanna.carcloud.model.Location;
 
@@ -181,11 +183,6 @@ public class GalileoTagDecoder {
     }
 
     public String tag03(ByteBuf byteBuf) {
-        /*byte[] asciiBytes = new byte[15];
-        for (int i = 0; i < 15; i++) {
-            asciiBytes[i] = byteBuf.readByte();
-        }
-        return new String(asciiBytes, StandardCharsets.US_ASCII);*/
         return byteBuf.readCharSequence(tagLengthMap.get(0x03), StandardCharsets.US_ASCII).toString();
     }
 
@@ -205,14 +202,27 @@ public class GalileoTagDecoder {
     public Location tag30(ByteBuf byteBuf) {
         byte firstByte = byteBuf.readByte();
         Integer satellites = firstByte & 0xf;
-        Integer correctness = (firstByte & 0xf0) >> 4;
+        int correctness = (firstByte & 0xf0) >> 4;
         Double latitude = byteBuf.readIntLE() / 1_000_000.;
         Double longitude = byteBuf.readIntLE() / 1_000_000.;
         Boolean isCorrect = correctness == 0 || correctness == 2;
         return new Location(latitude, longitude, satellites, correctness, isCorrect);
     }
+
+    @Getter
+    @AllArgsConstructor
+    public static class MotionInfo {
+        private double speed;
+        private double course;
+    }
+
+    public MotionInfo tag33(ByteBuf byteBuf) {
+        double speed = byteBuf.readUnsignedShortLE() / 10.;
+        double course = byteBuf.readUnsignedShortLE() / 10.;
+        return new MotionInfo(speed, course);
+    }
     
-    public static void tagFE(ByteBuf byteBuf) {
+    public void tagFE(ByteBuf byteBuf) {
         int extTagLength = byteBuf.readShortLE();
         //TODO сделать разбор расширенных тэгов. Здесь - временный вариант пропуска байт
         byteBuf.skipBytes(extTagLength);

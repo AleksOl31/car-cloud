@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class MonitoringData {
-    private Navigation navigation;
+    private Navigation navigation = new Navigation();
     private List<Integer> userTags = new ArrayList<>();
 }
