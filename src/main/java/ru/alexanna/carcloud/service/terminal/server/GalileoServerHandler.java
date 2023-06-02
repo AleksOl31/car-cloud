@@ -7,7 +7,6 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.util.ReferenceCountUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.alexanna.carcloud.model.Device;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Slf4j

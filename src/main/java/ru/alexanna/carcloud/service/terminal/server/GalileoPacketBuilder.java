@@ -12,7 +12,7 @@ import java.util.List;
 public class GalileoPacketBuilder extends ReplayingDecoder<Void> {
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
         if (byteBuf.readByte() == 0x01) {
             int packLength = (byteBuf.readShortLE() & 0x7FFF) + 5;
             byteBuf.resetReaderIndex();

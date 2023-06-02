@@ -5,8 +5,7 @@ import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.alexanna.carcloud.model.Device;
-import ru.alexanna.carcloud.model.Location;
+import ru.alexanna.carcloud.model.MonitoringPackage;
 import ru.alexanna.carcloud.model.Navigation;
 
 @Slf4j
@@ -15,9 +14,11 @@ import ru.alexanna.carcloud.model.Navigation;
 public class GalileoPackageParser implements PackageParser {
     private ByteBuf responseBuf;
     private final GalileoTagDecoder galileoTagDecoder;
+    private MonitoringPackage monitoringPackage;
 
     public GalileoPackageParser(GalileoTagDecoder galileoTagDecoder) {
         this.galileoTagDecoder = galileoTagDecoder;
+        monitoringPackage = new MonitoringPackage();
     }
 
     @Override
@@ -32,15 +33,27 @@ public class GalileoPackageParser implements PackageParser {
                 log.debug("Navigation data {}", navigation);
                 navigation = new Navigation();
             }
-            dataExtractor(tag, byteBuf, navigation);
+            dataExtractor(tag, byteBuf);
         }
         setResponse(byteBuf);
     }
 
-    private void dataExtractor(int tag, ByteBuf byteBuf, Navigation navigation) {
+    private void dataExtractor(int tag, ByteBuf byteBuf) {
         switch (tag) {
             case 0x01:
-                Integer tag01 = galileoTagDecoder.tag01(byteBuf);
+                monitoringPackage.getDevice().setHardVer(galileoTagDecoder.tag01(byteBuf));
+                break;
+            case 0x02:
+                monitoringPackage.getDevice().setSoftVer(galileoTagDecoder.tag02(byteBuf));
+                break;
+            case 0x03:
+                monitoringPackage.getDevice().setImei(galileoTagDecoder.tag03(byteBuf));
+                break;
+            case 0x04:
+                monitoringPackage.getDevice().setId(galileoTagDecoder.tag04(byteBuf));
+                break;
+            case 0x10:
+                monitoringPackage.getDevice().setRecordNum(galileoTagDecoder.tag10(byteBuf));
                 break;
             case 0x20:
                 navigation.setDate(galileoTagDecoder.tag20(byteBuf));
@@ -48,6 +61,7 @@ public class GalileoPackageParser implements PackageParser {
             case 0x30:
                 navigation.setLocation(galileoTagDecoder.tag30(byteBuf));
                 break;
+
             case 0xfe:
 //                galileoTagDecoder.tagFE(byteBuf);
                 GalileoTagDecoder.tagFE(byteBuf);

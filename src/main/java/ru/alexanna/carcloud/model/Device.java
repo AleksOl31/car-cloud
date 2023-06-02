@@ -4,13 +4,11 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @ToString
 public class Device {
     private Integer hardVer;
-    private Short softVer;
+    private Integer softVer;
     private String imei;
     private Integer id;
     private Integer recordNum;

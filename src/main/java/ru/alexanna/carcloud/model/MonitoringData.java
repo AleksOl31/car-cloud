@@ -3,11 +3,16 @@ package ru.alexanna.carcloud.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@NoArgsConstructor
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
+@NoArgsConstructor
+@ToString
 public class MonitoringData {
-    private Device device;
     private Navigation navigation;
+    private List<Integer> userTags = new ArrayList<>();
 }
