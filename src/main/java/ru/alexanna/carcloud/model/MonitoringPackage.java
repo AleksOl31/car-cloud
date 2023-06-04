@@ -13,7 +13,8 @@ import java.util.Set;
 @Setter
 @ToString
 public class MonitoringPackage {
-    private Device device = new Device();
+    private final RegInfo regInfo = new RegInfo();
+    private final Device device = new Device();
     private Set<MonitoringData> monitoringDataSet = new HashSet<>();
 
     public void add(MonitoringData monitoringData) {

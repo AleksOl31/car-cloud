@@ -7,13 +7,10 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class Device {
-    private Integer hardVer;
-    private Integer softVer;
-    private String imei;
-    private Integer id;
+    private RegInfo regInfo;
     private Integer recordNum;
     private Integer supplyVol;
     private Integer batteryVol;
     private Integer temp;
-
+    private Integer status;
 }
