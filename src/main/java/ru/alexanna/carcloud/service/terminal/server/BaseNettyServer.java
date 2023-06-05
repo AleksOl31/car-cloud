@@ -70,8 +70,8 @@ public class BaseNettyServer {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(new LoggingHandler());
                         socketChannel.pipeline().addLast(new ReadTimeoutHandler(soTimeout));
-                        socketChannel.pipeline().addLast(new GalileoPacketBuilder());
-                        socketChannel.pipeline().addLast(new GalileoServerHandler(packageParser));
+                        socketChannel.pipeline().addLast(new GalileoPackageDecoder(packageParser));
+                        socketChannel.pipeline().addLast(new ServerHandler());
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)

@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class Device {
-    private RegInfo regInfo;
     private Integer recordNum;
     private Integer supplyVol;
     private Integer batteryVol;

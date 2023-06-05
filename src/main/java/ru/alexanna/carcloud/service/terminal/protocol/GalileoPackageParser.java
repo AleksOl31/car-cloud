@@ -6,53 +6,44 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.alexanna.carcloud.model.MonitoringData;
+import ru.alexanna.carcloud.model.DecodedResultPacket;
 import ru.alexanna.carcloud.model.MonitoringPackage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
 @Qualifier("GALILEO_PARSER")
 @NoArgsConstructor
 public class GalileoPackageParser implements PackageParser {
-    private ByteBuf responseBuf;
+//    private ByteBuf responseBuf;
     private MonitoringPackage monitoringPackage;
 
     @Override
-    public void parse(ByteBuf byteBuf) {
-//        monitoringPackage = new MonitoringPackage();
-/*        MonitoringData monitoringData = null;
-        byteBuf.resetReaderIndex();
-        int firstTagInPackage = byteBuf.getByte(0);
-        while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
-            int tag = byteBuf.readUnsignedByte();
-            if (tag == firstTagInPackage) {
-                monitoringPackage.add(monitoringData);
-                monitoringData = new MonitoringData();
-            }
-            dataExtractor(tag, byteBuf, monitoringData);
-        }
-        log.debug("{}", monitoringPackage);
-        setResponse(byteBuf);*/
-
-        // FIXME: 04.06.2023 циклы работают неправильно. Подумать о переделке модели
+    public DecodedResultPacket parse(ByteBuf byteBuf) {
+        List<MonitoringPackage> monitoringPackages = new ArrayList<>();
         byteBuf.resetReaderIndex();
         int firstTagInPackage = byteBuf.getByte(0);
         monitoringPackage = new MonitoringPackage();
-
+        int packetNumber = 0;
         while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
-            MonitoringData monitoringData = new MonitoringData();
             int tag = byteBuf.readUnsignedByte();
-            do {
-                dataExtractor(tag, byteBuf,monitoringData);
-                tag = byteBuf.readUnsignedByte();
-            } while (tag != firstTagInPackage && byteBuf.readerIndex() < (byteBuf.capacity() - 2));
-            monitoringPackage.add(monitoringData);
+            packetNumber++;
+            dataExtractor(tag, byteBuf);
+            int nextTag = byteBuf.getUnsignedByte(byteBuf.readerIndex());
+            if (nextTag == firstTagInPackage && packetNumber != 1 && byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
+                monitoringPackages.add(monitoringPackage);
+                monitoringPackage = new MonitoringPackage();
+            }
         }
-        log.debug("{}", monitoringPackage);
-        setResponse(byteBuf);
+        monitoringPackages.add(monitoringPackage);
+        ByteBuf responseBuf = createResponse(byteBuf);
+        byteBuf.release();
+        return new DecodedResultPacket(monitoringPackages, responseBuf);
     }
 
-    private void dataExtractor(int tag, ByteBuf byteBuf, MonitoringData monitoringData) {
+    private void dataExtractor(int tag, ByteBuf byteBuf) {
         switch (tag) {
             case 0x01:
                 monitoringPackage.getRegInfo().setHardVer(GalileoTagDecoder.tag01(byteBuf));
@@ -70,15 +61,39 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.getDevice().setRecordNum(GalileoTagDecoder.tag10(byteBuf));
                 break;
             case 0x20:
-                monitoringData.getNavigation().setDate(GalileoTagDecoder.tag20(byteBuf));
+                monitoringPackage.getNavigation().setDate(GalileoTagDecoder.tag20(byteBuf));
                 break;
             case 0x30:
-                monitoringData.getNavigation().setLocation(GalileoTagDecoder.tag30(byteBuf));
+                monitoringPackage.getNavigation().setLocation(GalileoTagDecoder.tag30(byteBuf));
                 break;
             case 0x33:
                 GalileoTagDecoder.MotionInfo motionInfo = GalileoTagDecoder.tag33(byteBuf);
-                monitoringData.getNavigation().setSpeed(motionInfo.getSpeed());
-                monitoringData.getNavigation().setCourse(motionInfo.getCourse());
+                monitoringPackage.getNavigation().setSpeed(motionInfo.getSpeed());
+                monitoringPackage.getNavigation().setCourse(motionInfo.getCourse());
+                break;
+            case 0x34:
+                monitoringPackage.getNavigation().setHeight(GalileoTagDecoder.tag34(byteBuf));
+                break;
+            case 0x35:
+                int dop = GalileoTagDecoder.tag35(byteBuf);
+                if (monitoringPackage.getNavigation().getLocation().getCorrect()) {
+                    if (monitoringPackage.getNavigation().getLocation().getCorrectness() == 0)
+                        monitoringPackage.getNavigation().setHdop(dop / 10.);
+                    else if (monitoringPackage.getNavigation().getLocation().getCorrectness() == 2)
+                        monitoringPackage.getNavigation().setHdop(dop * 10.);
+                }
+                break;
+            case 0x40:
+                monitoringPackage.getDevice().setStatus(GalileoTagDecoder.tag40(byteBuf));
+                break;
+            case 0x41:
+                monitoringPackage.getDevice().setSupplyVol(GalileoTagDecoder.tag41(byteBuf));
+                break;
+            case 0x42:
+                monitoringPackage.getDevice().setBatteryVol(GalileoTagDecoder.tag42(byteBuf));
+                break;
+            case 0x43:
+                monitoringPackage.getDevice().setTemp(GalileoTagDecoder.tag43(byteBuf));
                 break;
             case 0xfe:
                 GalileoTagDecoder.tagFE(byteBuf);
@@ -88,14 +103,15 @@ public class GalileoPackageParser implements PackageParser {
         }
     }
 
-    private void setResponse(ByteBuf byteBuf) {
-        responseBuf = Unpooled.buffer(3, 3);
+    private ByteBuf createResponse(ByteBuf byteBuf) {
+        ByteBuf responseBuf = Unpooled.buffer(3, 3);
         responseBuf.writeByte(0x02);
         responseBuf.writeBytes(byteBuf);
-    }
-
-    @Override
-    public ByteBuf getResponse() {
         return responseBuf;
     }
+
+    /*@Override
+    public ByteBuf getResponse() {
+        return responseBuf;
+    }*/
 }

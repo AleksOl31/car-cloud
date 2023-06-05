@@ -1,36 +1,24 @@
 package ru.alexanna.carcloud.service.terminal.server;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.ReadTimeoutException;
-import io.netty.util.ReferenceCountUtil;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
+import ru.alexanna.carcloud.model.DecodedResultPacket;
 
 @Slf4j
-@AllArgsConstructor
-public class GalileoServerHandler extends ChannelInboundHandlerAdapter {
-    private final PackageParser packageParser;
-
-    //    private final Logger log = LogManager.getLogger(GalileoServerHandler.class);
+//@AllArgsConstructor
+public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         log.debug("Client connected with id: {}, R: {}", ctx.channel().id(), ctx.channel().remoteAddress());
-//        device = new Device();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ByteBuf buffer = (ByteBuf) msg;
-        try {
-            log.debug("Input buffer: {}", buffer);
-            packageParser.parse(buffer);
-            ctx.write(packageParser.getResponse());
-        } finally {
-            ReferenceCountUtil.release(buffer);
-        }
+        DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
+        log.debug("Input buffer: {}", decodedResultPacket.getMonitoringPackages());
+        ctx.write(decodedResultPacket.getResponse());
     }
 
     @Override

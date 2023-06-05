@@ -57,6 +57,30 @@ public class GalileoTagDecoder {
         double course = byteBuf.readUnsignedShortLE() / 10.;
         return new MotionInfo(speed, course);
     }
+
+    public static int tag34(ByteBuf byteBuf) {
+        return byteBuf.readShortLE();
+    }
+
+    public static int tag35(ByteBuf byteBuf) {
+        return byteBuf.readUnsignedByte();
+    }
+
+    public static int tag40(ByteBuf byteBuf) {
+        return byteBuf.readUnsignedShortLE();
+    }
+
+    public static int tag41(ByteBuf byteBuf) {
+        return byteBuf.readUnsignedShortLE();
+    }
+
+    public static int tag42(ByteBuf byteBuf) {
+        return byteBuf.readUnsignedShortLE();
+    }
+
+    public static int tag43(ByteBuf byteBuf) {
+        return byteBuf.readByte();
+    }
     
     public static void tagFE(ByteBuf byteBuf) {
         int extTagLength = byteBuf.readShortLE();
