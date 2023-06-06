@@ -25,7 +25,7 @@ public class GalileoPackageDecoder extends ReplayingDecoder<Void> {
                 list.add(packageParser.parse(dataBuf));
             }
         } else {
-//            list.add(byteBuf);
+            list.add(byteBuf);
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
     }

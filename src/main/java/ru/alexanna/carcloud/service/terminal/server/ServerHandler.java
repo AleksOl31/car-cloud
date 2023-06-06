@@ -1,14 +1,21 @@
 package ru.alexanna.carcloud.service.terminal.server;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.model.DecodedResultPacket;
+import ru.alexanna.carcloud.model.RegInfo;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
-//@AllArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+    private final Map<ChannelId, RegInfo> channelsMap = new HashMap<>();
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         log.debug("Client connected with id: {}, R: {}", ctx.channel().id(), ctx.channel().remoteAddress());
@@ -16,9 +23,24 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
-        log.debug("Input buffer: {}", decodedResultPacket.getMonitoringPackages());
-        ctx.write(decodedResultPacket.getResponse());
+        if (msg instanceof DecodedResultPacket) {
+            DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
+            DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
+            log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
+            ctx.write(updatedDecodedResultPacket.getResponse());
+        } else
+            throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
+    }
+
+    private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
+        if (channelsMap.get(ctx.channel().id()) == null) {
+            channelsMap.put(ctx.channel().id(), decodedResultPacket.getMonitoringPackages().get(0).getRegInfo());
+        } else {
+            decodedResultPacket.getMonitoringPackages().forEach((monitoringPackage) -> {
+                monitoringPackage.setRegInfo(channelsMap.get(ctx.channel().id()));
+            });
+        }
+        return decodedResultPacket;
     }
 
     @Override

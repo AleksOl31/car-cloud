@@ -1,22 +1,19 @@
 package ru.alexanna.carcloud.model;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 @NoArgsConstructor
 @Getter
 @Setter
 //@ToString
 public class MonitoringPackage {
-    private final RegInfo regInfo = new RegInfo();
+    private RegInfo regInfo = new RegInfo();
     private final Device device = new Device();
     private final Navigation navigation = new Navigation();
     private final List<Integer> userTags = new ArrayList<>();
