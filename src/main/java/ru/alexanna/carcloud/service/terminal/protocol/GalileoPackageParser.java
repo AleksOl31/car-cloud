@@ -95,6 +95,16 @@ public class GalileoPackageParser implements PackageParser {
             case 0x43:
                 monitoringPackage.getDevice().setTemp(GalileoTagDecoder.tag43(byteBuf));
                 break;
+            case 0xe2:
+            case 0xe3:
+            case 0xe4:
+            case 0xe5:
+            case 0xe6:
+            case 0xe7:
+            case 0xe8:
+            case 0xe9:
+                monitoringPackage.getUserTags().add(GalileoTagDecoder.tagE2_E9(byteBuf));
+                break;
             case 0xfe:
                 GalileoTagDecoder.tagFE(byteBuf);
                 break;

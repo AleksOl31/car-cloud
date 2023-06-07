@@ -81,6 +81,10 @@ public class GalileoTagDecoder {
     public static int tag43(ByteBuf byteBuf) {
         return byteBuf.readByte();
     }
+
+    public static int tagE2_E9(ByteBuf byteBuf) {
+        return byteBuf.readInt();
+    }
     
     public static void tagFE(ByteBuf byteBuf) {
         int extTagLength = byteBuf.readShortLE();

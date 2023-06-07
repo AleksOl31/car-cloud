@@ -18,17 +18,16 @@ public class GalileoPackageDecoder extends ReplayingDecoder<Void> {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        if (byteBuf.readByte() == 0x01) {
-            int packLength = (byteBuf.readShortLE() & 0x7FFF) + 5;
-            if (packLength <= 1000) {
-                byteBuf.resetReaderIndex();
-                ByteBuf dataBuf = byteBuf.readBytes(packLength).copy(3, packLength - 3);
-                list.add(packageParser.parse(dataBuf));
-                // FIXME: 06.06.2023 Протестировать
-                ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
-            }
+        byte header = byteBuf.readByte();
+        int packLength = (byteBuf.readShortLE() & 0x7FFF) + 5;
+        byteBuf.resetReaderIndex();
+        if (header == 0x01 && packLength <= 1000) {
+            ByteBuf dataBuf = byteBuf.readBytes(packLength).copy(3, packLength - 3);
+            // FIXME: 06.06.2023 Добавлено в виде опции JVM: -Dio.netty.leakDetectionLevel=advanced
+//            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
+            list.add(packageParser.parse(dataBuf));
         } else {
-            list.add(byteBuf);
+//            list.add(byteBuf);
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
     }
