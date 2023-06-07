@@ -86,7 +86,7 @@ public class BaseNettyServer {
             channelFuture.channel().closeFuture().sync();
             isRunning = false;
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
