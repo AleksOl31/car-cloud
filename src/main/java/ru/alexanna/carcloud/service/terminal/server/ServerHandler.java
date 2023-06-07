@@ -1,8 +1,10 @@
 package ru.alexanna.carcloud.service.terminal.server;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private final Map<ChannelId, RegInfo> channelsMap = new HashMap<>();
+    private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -28,16 +30,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
             log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
             ctx.write(updatedDecodedResultPacket.getResponse());
-        } else
+        } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
+        }
     }
 
     private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
-        if (channelsMap.get(ctx.channel().id()) == null) {
-            channelsMap.put(ctx.channel().id(), decodedResultPacket.getMonitoringPackages().get(0).getRegInfo());
+        if (channelsMap.get(ctx.channel()) == null) {
+            channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().get(0).getRegInfo());
         } else {
             decodedResultPacket.getMonitoringPackages().forEach((monitoringPackage) -> {
-                monitoringPackage.setRegInfo(channelsMap.get(ctx.channel().id()));
+                monitoringPackage.setRegInfo(channelsMap.get(ctx.channel()));
             });
         }
         return decodedResultPacket;
@@ -53,6 +56,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
+        channelsMap.remove(ctx.channel());
         log.debug("Client disconnected {}", ctx.channel().remoteAddress());
     }
 
