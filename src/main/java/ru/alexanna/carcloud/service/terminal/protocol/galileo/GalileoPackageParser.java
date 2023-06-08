@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.service.terminal.protocol;
+package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.alexanna.carcloud.model.DecodedResultPacket;
 import ru.alexanna.carcloud.model.MonitoringPackage;
+import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 import java.util.ArrayList;
 import java.util.List;

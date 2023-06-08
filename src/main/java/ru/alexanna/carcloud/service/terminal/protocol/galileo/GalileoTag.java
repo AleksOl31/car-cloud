@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.service.terminal.protocol;
+package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.service.terminal.protocol;
+package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
