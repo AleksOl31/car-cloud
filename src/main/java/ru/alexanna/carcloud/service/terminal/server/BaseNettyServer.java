@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.alexanna.carcloud.model.ServerState;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Service
@@ -20,8 +21,8 @@ public class BaseNettyServer {
     private EventLoopGroup boss;
     private EventLoopGroup worker;
     private ChannelFuture channelFuture;
-    @Getter
-    private boolean isRunning = false;
+    /*@Getter
+    private boolean isRunning = false;*/
     @Value("${terminal.server.read-timeout}")
     private int soTimeout;
     @Value("${terminal.server.galileo-port}")
@@ -30,10 +31,13 @@ public class BaseNettyServer {
     private int scoutPort;
     private final PackageParser galileoPackageParser;
     private PackageParser scoutPackageParser;
+    private final ServerState serverState;
 
-    public BaseNettyServer(PackageParser galileoPackageParser) {
+    public BaseNettyServer(PackageParser galileoPackageParser, ServerState serverState) {
         this.galileoPackageParser = galileoPackageParser;
         this.scoutPackageParser = galileoPackageParser;
+        this.serverState = serverState;
+        this.serverState.setRunning(false);
     }
     public void run() {
         boss = new NioEventLoopGroup(1);
@@ -50,7 +54,8 @@ public class BaseNettyServer {
 
             // server started!
             channelFuture = galFuture;
-            isRunning = true;
+//            isRunning = true;
+            serverState.setRunning(true);
             galFuture.channel().closeFuture().sync(); // blocking operation
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -84,7 +89,8 @@ public class BaseNettyServer {
             boss.shutdownGracefully().sync();
             worker.shutdownGracefully().sync();
             channelFuture.channel().closeFuture().sync();
-            isRunning = false;
+//            isRunning = false;
+            serverState.setRunning(false);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -14,8 +14,8 @@ public class CarCloudApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(CarCloudApplication.class, args);
-        BaseNettyServer nettyServer = context.getBean(BaseNettyServer.class);
-        nettyServer.run();
+//        BaseNettyServer nettyServer = context.getBean(BaseNettyServer.class);
+//        nettyServer.run();
     }
 
 }

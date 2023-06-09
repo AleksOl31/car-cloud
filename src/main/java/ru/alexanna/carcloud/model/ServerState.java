@@ -1,16 +1,28 @@
 package ru.alexanna.carcloud.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@Setter
-@Getter
 @NoArgsConstructor
-@AllArgsConstructor
+@Component
 public class ServerState {
+    @Getter
     private boolean running;
-    private String stateStr;
-    private String actionStr;
+//    @Value("запущен")
+    private String stateName;
+//    @Value("Остановить")
+    private String actionName;
+
+    public void setRunning(boolean isRunning) {
+        running = isRunning;
+    }
+
+    public String getStateName() {
+        return isRunning() ? "запущен" : "остановлен";
+    }
+
+    public String getActionName() {
+        return isRunning() ? "Остановить" : "Запустить";
+    }
 }
