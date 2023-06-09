@@ -9,6 +9,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,13 @@ import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Service
 @Slf4j
-public class BaseNettyServer {
+public class BaseNettyServer implements Runnable {
     private EventLoopGroup boss;
     private EventLoopGroup worker;
     private ChannelFuture channelFuture;
-    /*@Getter
-    private boolean isRunning = false;*/
+    @Getter
+    @Setter
+//    private boolean running = false;
     @Value("${terminal.server.read-timeout}")
     private int soTimeout;
     @Value("${terminal.server.galileo-port}")
@@ -31,14 +33,15 @@ public class BaseNettyServer {
     private int scoutPort;
     private final PackageParser galileoPackageParser;
     private PackageParser scoutPackageParser;
-    private final ServerState serverState;
+//    private final ServerState serverState;
 
-    public BaseNettyServer(PackageParser galileoPackageParser, ServerState serverState) {
+    public BaseNettyServer(PackageParser galileoPackageParser) {
         this.galileoPackageParser = galileoPackageParser;
         this.scoutPackageParser = galileoPackageParser;
-        this.serverState = serverState;
-        this.serverState.setRunning(false);
+//        this.serverState.setRunning(false);
     }
+
+    @Override
     public void run() {
         boss = new NioEventLoopGroup(1);
         worker = new NioEventLoopGroup();
@@ -54,8 +57,7 @@ public class BaseNettyServer {
 
             // server started!
             channelFuture = galFuture;
-//            isRunning = true;
-            serverState.setRunning(true);
+//            setRunning(true);
             galFuture.channel().closeFuture().sync(); // blocking operation
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -89,8 +91,7 @@ public class BaseNettyServer {
             boss.shutdownGracefully().sync();
             worker.shutdownGracefully().sync();
             channelFuture.channel().closeFuture().sync();
-//            isRunning = false;
-            serverState.setRunning(false);
+//            setRunning(false);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

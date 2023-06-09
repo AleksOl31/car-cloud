@@ -37,9 +37,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (channelsMap.get(ctx.channel()) == null) {
             channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().get(0).getRegInfo());
         } else {
-            decodedResultPacket.getMonitoringPackages().forEach((monitoringPackage) -> {
-                monitoringPackage.setRegInfo(channelsMap.get(ctx.channel()));
-            });
+            decodedResultPacket.getMonitoringPackages().forEach(monitoringPackage -> monitoringPackage.setRegInfo(channelsMap.get(ctx.channel())));
         }
         return decodedResultPacket;
     }
