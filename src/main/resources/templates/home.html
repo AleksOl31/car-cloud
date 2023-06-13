@@ -6,10 +6,11 @@
     <title>CarCloud</title>
 </head>
 <body>
-    <img th:src="@{/images/truck_PNG.png}"/>
+    <img src="/static/images/truck_PNG.png" th:src="@{/images/truck_PNG.png}"/>
     <h1>Сервер CarCloud АО "Лебединский ГОК"</h1>
     <form action="/home" method="post">
-        <p>Сервер CarCloud <span th:text="${state}"></span> <button type="submit" th:text="${actionName}"></button></p>
+        <p>Сервер CarCloud <span th:text="${state}">остновлен</span>
+            <button type="submit" th:text="${actionName}">Запустить</button></p>
     </form>
 <!--    <img th:src="@{/images/truck_PNG.png}"/>-->
 <!--    <p th:text="${car.getName()}"></p>-->
