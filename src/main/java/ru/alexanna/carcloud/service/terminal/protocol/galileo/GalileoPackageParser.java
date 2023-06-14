@@ -121,8 +121,4 @@ public class GalileoPackageParser implements PackageParser {
         return responseBuf;
     }
 
-    /*@Override
-    public ByteBuf getResponse() {
-        return responseBuf;
-    }*/
 }

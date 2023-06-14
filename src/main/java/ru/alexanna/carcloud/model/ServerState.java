@@ -2,8 +2,6 @@ package ru.alexanna.carcloud.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.alexanna.carcloud.service.terminal.server.BaseNettyServer;
 
@@ -32,7 +30,7 @@ public class ServerState {
 
     public void run() {
         setRunning(true);
-        thread = new Thread(baseNettyServer::run);
+        thread = new Thread(baseNettyServer);
         thread.start();
     }
 
