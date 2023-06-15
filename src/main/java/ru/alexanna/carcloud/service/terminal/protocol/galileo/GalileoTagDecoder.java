@@ -3,7 +3,9 @@ package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import ru.alexanna.carcloud.model.FuelSensor;
 import ru.alexanna.carcloud.model.Location;
+import ru.alexanna.carcloud.model.TempSensor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -82,8 +84,49 @@ public class GalileoTagDecoder {
         return byteBuf.readByte();
     }
 
+    // User tags
     public static int tagE2_E9(ByteBuf byteBuf) {
         return byteBuf.readInt();
+    }
+
+    public static int tagAnalogInputs(ByteBuf byteBuf) {
+        return byteBuf.readUnsignedShortLE();
+    }
+
+    // RS485[0] - RS485[2]: ДУТ без температуры
+    public static FuelSensor tag60_62(ByteBuf byteBuf) {
+        FuelSensor fuelSensor = new FuelSensor();
+        fuelSensor.setFuelLevel(byteBuf.readUnsignedShortLE());
+        return fuelSensor;
+    }
+
+    // RS485[3] - RS485[15]: ДУТ с температурой
+    public static FuelSensor tag63_6F(ByteBuf byteBuf) {
+        int fuelLevel = byteBuf.readUnsignedShortLE();
+        int fuelTemp = byteBuf.readByte();
+        return new FuelSensor(fuelLevel, fuelTemp);
+    }
+
+    // 1-Wire: Термодатчики
+    public static TempSensor tag70_77(ByteBuf byteBuf) {
+        int id = byteBuf.readUnsignedByte();
+        int temp = byteBuf.readByte();
+        return new TempSensor(id, temp);
+    }
+
+    //CAN8BIT R15 - CAN8BIT R30
+    public static int tagA0_AF(ByteBuf byteBuf) {
+        return byteBuf.readByte();
+    }
+
+    //CAN16BIT R5 - CAN16BIT R14
+    public static int tagB0_B9(ByteBuf byteBuf) {
+        return byteBuf.readShortLE();
+    }
+
+    //CAN32BIT R5 - CAN32BIT R14
+    public static int tagF0_F9(ByteBuf byteBuf) {
+        return byteBuf.readIntLE();
     }
     
     public static void tagFE(ByteBuf byteBuf) {

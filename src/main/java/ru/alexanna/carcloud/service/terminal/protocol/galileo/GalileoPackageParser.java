@@ -96,6 +96,94 @@ public class GalileoPackageParser implements PackageParser {
             case 0x43:
                 monitoringPackage.getDevice().setTemp(GalileoTagDecoder.tag43(byteBuf));
                 break;
+            case 0x50:
+            case 0x51:
+            case 0x52:
+            case 0x53:
+            case 0x54:
+            case 0x55:
+            case 0x56:
+            case 0x57:
+            case 0x78:
+            case 0x79:
+            case 0x7A:
+            case 0x7B:
+            case 0x7C:
+            case 0x7D:
+                monitoringPackage.getAnalogInputs().add(GalileoTagDecoder.tagAnalogInputs(byteBuf));
+                break;
+            case 0x60:
+            case 0x61:
+            case 0x62:
+                monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tag60_62(byteBuf));
+                break;
+            case 0x63:
+            case 0x64:
+            case 0x65:
+            case 0x66:
+            case 0x67:
+            case 0x68:
+            case 0x69:
+            case 0x6A:
+            case 0x6B:
+            case 0x6C:
+            case 0x6D:
+            case 0x6E:
+            case 0x6F:
+                monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tag63_6F(byteBuf));
+                break;
+            case 0x70:
+            case 0x71:
+            case 0x72:
+            case 0x73:
+            case 0x74:
+            case 0x75:
+            case 0x76:
+            case 0x77:
+                monitoringPackage.getTempSensors().add(GalileoTagDecoder.tag70_77(byteBuf));
+                break;
+            case 0xA0:
+            case 0xA1:
+            case 0xA2:
+            case 0xA3:
+            case 0xA4:
+            case 0xA5:
+            case 0xA6:
+            case 0xA7:
+            case 0xA8:
+            case 0xA9:
+            case 0xAA:
+            case 0xAB:
+            case 0xAC:
+            case 0xAD:
+            case 0xAE:
+            case 0xAF:
+                monitoringPackage.getCan8BitList().add(GalileoTagDecoder.tagA0_AF(byteBuf));
+                break;
+            case 0xB0:
+            case 0xB1:
+            case 0xB2:
+            case 0xB3:
+            case 0xB4:
+            case 0xB5:
+            case 0xB6:
+            case 0xB7:
+            case 0xB8:
+            case 0xB9:
+                monitoringPackage.getCan16BitList().add(GalileoTagDecoder.tagB0_B9(byteBuf));
+                break;
+            case 0xF0:
+            case 0xF1:
+            case 0xF2:
+            case 0xF3:
+            case 0xF4:
+            case 0xF5:
+            case 0xF6:
+            case 0xF7:
+            case 0xF8:
+            case 0xF9:
+                monitoringPackage.getCan32BitList().add(GalileoTagDecoder.tagF0_F9(byteBuf));
+                break;
             case 0xe2:
             case 0xe3:
             case 0xe4:
