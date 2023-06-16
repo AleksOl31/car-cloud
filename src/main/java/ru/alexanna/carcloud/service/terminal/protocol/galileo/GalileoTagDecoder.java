@@ -8,7 +8,9 @@ import ru.alexanna.carcloud.model.Location;
 import ru.alexanna.carcloud.model.TempSensor;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GalileoTagDecoder {
 
@@ -129,10 +131,19 @@ public class GalileoTagDecoder {
         return byteBuf.readIntLE();
     }
     
-    public static void tagFE(ByteBuf byteBuf) {
+    public static List<Double> tagFE(ByteBuf byteBuf) {
+        List<Double> extendedTags = new ArrayList<>();
         int extTagLength = byteBuf.readShortLE();
-        //TODO сделать разбор расширенных тэгов. Здесь - временный вариант пропуска байт
-        byteBuf.skipBytes(extTagLength);
+        int bytesCount = 0;
+        //FIXME обработать все варианты тэгов (Здесь только 4 байтные)
+        while (bytesCount < extTagLength) {
+            int tagNum = byteBuf.readUnsignedShortLE();
+            int tagValue = byteBuf.readIntLE();
+            extendedTags.add(tagValue / 100.);
+            bytesCount += 6;
+        }
+//        byteBuf.skipBytes(extTagLength);
+        return extendedTags;
     }
 
 }

@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-//@ToString
 public class MonitoringPackage {
     private RegInfo regInfo = new RegInfo();
     private final Device device = new Device();
@@ -23,7 +22,7 @@ public class MonitoringPackage {
     private final List<Integer> can8BitList = new ArrayList<>();
     private final List<Integer> can16BitList = new ArrayList<>();
     private final List<Integer> can32BitList = new ArrayList<>();
-    private final List<Integer> extendedTags = new ArrayList<>();
+    private final List<Double> extendedTags = new ArrayList<>();
 
     @Override
     public String toString() {

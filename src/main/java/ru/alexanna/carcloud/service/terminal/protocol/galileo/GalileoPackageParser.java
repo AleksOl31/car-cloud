@@ -195,7 +195,7 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.getUserTags().add(GalileoTagDecoder.tagE2_E9(byteBuf));
                 break;
             case 0xfe:
-                GalileoTagDecoder.tagFE(byteBuf);
+                monitoringPackage.getExtendedTags().addAll(GalileoTagDecoder.tagFE(byteBuf));
                 break;
             default:
                 byteBuf.skipBytes(GalileoTag.length(tag));
