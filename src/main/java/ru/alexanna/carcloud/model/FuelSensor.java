@@ -3,11 +3,10 @@ package ru.alexanna.carcloud.model;
 import lombok.*;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Setter
+@RequiredArgsConstructor
 @Getter
 @ToString
 public class FuelSensor {
-    private Integer fuelLevel;
+    private final Integer fuelLevel;
     private Integer fuelTemp;
 }
