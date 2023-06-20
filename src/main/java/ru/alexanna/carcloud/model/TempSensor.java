@@ -8,6 +8,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public class TempSensor {
-    private final Integer id;
-    private final Integer temp;
+    private final Integer ident;
+    private final Integer temperature;
 }

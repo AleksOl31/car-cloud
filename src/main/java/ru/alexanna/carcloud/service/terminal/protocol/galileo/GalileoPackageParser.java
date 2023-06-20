@@ -56,13 +56,13 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.getRegInfo().setImei(GalileoTagDecoder.tag03(byteBuf));
                 break;
             case 0x04:
-                monitoringPackage.getRegInfo().setId(GalileoTagDecoder.tag04(byteBuf));
+                monitoringPackage.getRegInfo().setIdent(GalileoTagDecoder.tag04(byteBuf));
                 break;
             case 0x10:
                 monitoringPackage.getDevice().setRecordNum(GalileoTagDecoder.tag10(byteBuf));
                 break;
             case 0x20:
-                monitoringPackage.getNavigation().setDate(GalileoTagDecoder.tag20(byteBuf));
+                monitoringPackage.getNavigation().setCreatedAt(GalileoTagDecoder.tag20(byteBuf));
                 break;
             case 0x30:
                 monitoringPackage.getNavigation().setLocation(GalileoTagDecoder.tag30(byteBuf));
@@ -94,7 +94,7 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.getDevice().setBatteryVol(GalileoTagDecoder.tag42(byteBuf));
                 break;
             case 0x43:
-                monitoringPackage.getDevice().setTemp(GalileoTagDecoder.tag43(byteBuf));
+                monitoringPackage.getDevice().setTemperature(GalileoTagDecoder.tag43(byteBuf));
                 break;
             case 0x50:
             case 0x51:

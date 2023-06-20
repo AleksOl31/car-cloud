@@ -12,7 +12,7 @@ import java.util.Objects;
 @ToString
 public class Navigation {
 
-    private Date date;
+    private Date createdAt;
     private Location location;
     private Double speed;
     private Double course;
@@ -24,11 +24,11 @@ public class Navigation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Navigation that = (Navigation) o;
-        return Objects.equals(date, that.date) && Objects.equals(location, that.location) && Objects.equals(speed, that.speed) && Objects.equals(course, that.course) && Objects.equals(height, that.height) && Objects.equals(hdop, that.hdop);
+        return Objects.equals(createdAt, that.createdAt) && Objects.equals(location, that.location) && Objects.equals(speed, that.speed) && Objects.equals(course, that.course) && Objects.equals(height, that.height) && Objects.equals(hdop, that.hdop);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(date, location, speed, course, height, hdop);
+        return Objects.hash(createdAt, location, speed, course, height, hdop);
     }
 }
