@@ -11,10 +11,9 @@ public class ServerState {
     @Getter
     @Setter
     private boolean running = false;
-    private String stateName;
-    private String actionName;
+//    private String stateName;
+//    private String actionName;
     private final BaseNettyServer baseNettyServer;
-    private Thread thread;
 
     public ServerState(BaseNettyServer baseNettyServer) {
         this.baseNettyServer = baseNettyServer;
@@ -29,13 +28,13 @@ public class ServerState {
     }
 
     public void run() {
-        setRunning(true);
-        thread = new Thread(baseNettyServer);
+        Thread thread = new Thread(baseNettyServer);
         thread.start();
+        setRunning(true);
     }
 
     public void stop() {
-            setRunning(false);
-            baseNettyServer.stop();
+        baseNettyServer.stop();
+        setRunning(false);
     }
 }
