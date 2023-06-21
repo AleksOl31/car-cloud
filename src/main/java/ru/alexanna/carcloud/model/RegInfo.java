@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 public class RegInfo {
     private String imei;
-    private Integer ident;
+    private Integer deviceId;
     private Integer hardVer;
     private Integer softVer;
 }

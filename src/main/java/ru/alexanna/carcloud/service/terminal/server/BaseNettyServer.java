@@ -12,11 +12,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import ru.alexanna.carcloud.model.ServerState;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Service
+@PropertySource("classpath:connection.properties")
 @Slf4j
 public class BaseNettyServer implements Runnable {
     private EventLoopGroup boss;
@@ -25,7 +26,7 @@ public class BaseNettyServer implements Runnable {
     @Getter
     @Setter
 //    private boolean running = false;
-    @Value("${terminal.server.read-timeout}")
+    @Value("${terminal.server.socket-read-timeout}")
     private int soTimeout;
     @Value("${terminal.server.galileo-port}")
     private int galileoPort;
@@ -34,6 +35,7 @@ public class BaseNettyServer implements Runnable {
     private final PackageParser galileoPackageParser;
     private PackageParser scoutPackageParser;
 //    private final ServerState serverState;
+
 
     public BaseNettyServer(PackageParser galileoPackageParser) {
         this.galileoPackageParser = galileoPackageParser;

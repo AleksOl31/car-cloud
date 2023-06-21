@@ -3,8 +3,8 @@ package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import ru.alexanna.carcloud.model.FuelSensor;
-import ru.alexanna.carcloud.model.Location;
 import ru.alexanna.carcloud.model.TempSensor;
 
 import java.nio.charset.StandardCharsets;
@@ -37,6 +37,18 @@ public class GalileoTagDecoder {
     public static Date tag20(ByteBuf byteBuf) {
         long secondsNum = byteBuf.readUnsignedIntLE();
         return new Date(secondsNum * 1000);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class Location {
+        private Double latitude;
+        private Double longitude;
+        private Integer satellitesNum;
+        private Integer correctness;
+        private Boolean correct;
+
     }
 
     public static Location tag30(ByteBuf byteBuf) {

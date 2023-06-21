@@ -56,45 +56,50 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.getRegInfo().setImei(GalileoTagDecoder.tag03(byteBuf));
                 break;
             case 0x04:
-                monitoringPackage.getRegInfo().setIdent(GalileoTagDecoder.tag04(byteBuf));
+                monitoringPackage.getRegInfo().setDeviceId(GalileoTagDecoder.tag04(byteBuf));
                 break;
             case 0x10:
-                monitoringPackage.getDevice().setRecordNum(GalileoTagDecoder.tag10(byteBuf));
+                monitoringPackage.setRecordNum(GalileoTagDecoder.tag10(byteBuf));
                 break;
             case 0x20:
-                monitoringPackage.getNavigation().setCreatedAt(GalileoTagDecoder.tag20(byteBuf));
+                monitoringPackage.setCreatedAt(GalileoTagDecoder.tag20(byteBuf));
                 break;
             case 0x30:
-                monitoringPackage.getNavigation().setLocation(GalileoTagDecoder.tag30(byteBuf));
+                GalileoTagDecoder.Location location = GalileoTagDecoder.tag30(byteBuf);
+                monitoringPackage.setLatitude(location.getLatitude());
+                monitoringPackage.setLongitude(location.getLongitude());
+                monitoringPackage.setSatellitesNum(location.getSatellitesNum());
+                monitoringPackage.setCorrectness(location.getCorrectness());
+                monitoringPackage.setCorrect(location.getCorrect());
                 break;
             case 0x33:
                 GalileoTagDecoder.MotionInfo motionInfo = GalileoTagDecoder.tag33(byteBuf);
-                monitoringPackage.getNavigation().setSpeed(motionInfo.getSpeed());
-                monitoringPackage.getNavigation().setCourse(motionInfo.getCourse());
+                monitoringPackage.setSpeed(motionInfo.getSpeed());
+                monitoringPackage.setCourse(motionInfo.getCourse());
                 break;
             case 0x34:
-                monitoringPackage.getNavigation().setHeight(GalileoTagDecoder.tag34(byteBuf));
+                monitoringPackage.setHeight(GalileoTagDecoder.tag34(byteBuf));
                 break;
             case 0x35:
                 int dop = GalileoTagDecoder.tag35(byteBuf);
-                if (monitoringPackage.getNavigation().getLocation().getCorrect()) {
-                    if (monitoringPackage.getNavigation().getLocation().getCorrectness() == 0)
-                        monitoringPackage.getNavigation().setHdop(dop / 10.);
-                    else if (monitoringPackage.getNavigation().getLocation().getCorrectness() == 2)
-                        monitoringPackage.getNavigation().setHdop(dop * 10.);
+                if (monitoringPackage.getCorrect()) {
+                    if (monitoringPackage.getCorrectness() == 0)
+                        monitoringPackage.setHdop(dop / 10.);
+                    else if (monitoringPackage.getCorrectness() == 2)
+                        monitoringPackage.setHdop(dop * 10.);
                 }
                 break;
             case 0x40:
-                monitoringPackage.getDevice().setStatus(GalileoTagDecoder.tag40(byteBuf));
+                monitoringPackage.setStatus(GalileoTagDecoder.tag40(byteBuf));
                 break;
             case 0x41:
-                monitoringPackage.getDevice().setSupplyVol(GalileoTagDecoder.tag41(byteBuf));
+                monitoringPackage.setSupplyVol(GalileoTagDecoder.tag41(byteBuf));
                 break;
             case 0x42:
-                monitoringPackage.getDevice().setBatteryVol(GalileoTagDecoder.tag42(byteBuf));
+                monitoringPackage.setBatteryVol(GalileoTagDecoder.tag42(byteBuf));
                 break;
             case 0x43:
-                monitoringPackage.getDevice().setTemperature(GalileoTagDecoder.tag43(byteBuf));
+                monitoringPackage.setTemperature(GalileoTagDecoder.tag43(byteBuf));
                 break;
             case 0x50:
             case 0x51:
