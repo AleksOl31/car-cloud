@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import ru.alexanna.carcloud.service.services.MonitoringDataService;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Service
@@ -33,14 +34,16 @@ public class BaseNettyServer implements Runnable {
     @Value("${terminal.server.scout-port}")
     private int scoutPort;
     private final PackageParser galileoPackageParser;
-    private PackageParser scoutPackageParser;
+    private final PackageParser scoutPackageParser;
 //    private final ServerState serverState;
+    private final MonitoringDataService monitoringDataService;
 
 
-    public BaseNettyServer(PackageParser galileoPackageParser) {
+    public BaseNettyServer(PackageParser galileoPackageParser, MonitoringDataService monitoringDataService) {
         this.galileoPackageParser = galileoPackageParser;
         this.scoutPackageParser = galileoPackageParser;
 //        this.serverState.setRunning(false);
+        this.monitoringDataService = monitoringDataService;
     }
 
     @Override
@@ -80,7 +83,7 @@ public class BaseNettyServer implements Runnable {
                         socketChannel.pipeline().addLast(new LoggingHandler());
                         socketChannel.pipeline().addLast(new ReadTimeoutHandler(soTimeout));
                         socketChannel.pipeline().addLast(new GalileoPackageDecoder(packageParser));
-                        socketChannel.pipeline().addLast(new ServerHandler());
+                        socketChannel.pipeline().addLast(new ServerHandler(monitoringDataService));
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)

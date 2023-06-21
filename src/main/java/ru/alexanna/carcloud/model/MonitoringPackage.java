@@ -24,7 +24,7 @@ public class MonitoringPackage {
     private Integer recordNum;
     private Integer supplyVol;
     private Integer batteryVol;
-    private Integer temperature;
+    private Integer deviceTemp;
     private Integer status;
     //    private final Navigation navigation = new Navigation();
     private Date createdAt;

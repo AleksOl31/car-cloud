@@ -99,7 +99,7 @@ public class GalileoPackageParser implements PackageParser {
                 monitoringPackage.setBatteryVol(GalileoTagDecoder.tag42(byteBuf));
                 break;
             case 0x43:
-                monitoringPackage.setTemperature(GalileoTagDecoder.tag43(byteBuf));
+                monitoringPackage.setDeviceTemp(GalileoTagDecoder.tag43(byteBuf));
                 break;
             case 0x50:
             case 0x51:

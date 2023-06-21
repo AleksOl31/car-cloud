@@ -5,16 +5,20 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.timeout.ReadTimeoutException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.model.DecodedResultPacket;
 import ru.alexanna.carcloud.model.RegInfo;
+import ru.alexanna.carcloud.service.services.MonitoringDataService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
+    private final MonitoringDataService monitoringDataService;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -27,6 +31,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
             log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
+            monitoringDataService.save(updatedDecodedResultPacket.getMonitoringPackages());
             ctx.write(updatedDecodedResultPacket.getResponse());
         } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
