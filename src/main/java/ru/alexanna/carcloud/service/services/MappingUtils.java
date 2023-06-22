@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 import ru.alexanna.carcloud.model.MonitoringPackage;
 
+import java.util.Optional;
+
 @Service
 public class MappingUtils {
     public TerminalMessage mapToTerminalMessage(MonitoringPackage monitoringPackage) {

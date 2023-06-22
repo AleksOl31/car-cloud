@@ -1,5 +1,6 @@
 package ru.alexanna.carcloud.entities;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;

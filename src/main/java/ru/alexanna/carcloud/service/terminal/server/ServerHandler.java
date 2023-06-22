@@ -30,7 +30,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof DecodedResultPacket) {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
-            log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
+//            log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
             monitoringDataService.save(updatedDecodedResultPacket.getMonitoringPackages());
             ctx.write(updatedDecodedResultPacket.getResponse());
         } else {

@@ -15,20 +15,13 @@ import java.util.List;
 @Setter
 @ToString
 public class MonitoringPackage {
-        private RegInfo regInfo = new RegInfo();
-//    private String imei;
-//    private Integer deviceId;
-//    private Integer hardVer;
-//    private Integer softVer;
-    //    private final Device device = new Device();
+    private RegInfo regInfo = new RegInfo();
     private Integer recordNum;
     private Integer supplyVol;
     private Integer batteryVol;
     private Integer deviceTemp;
     private Integer status;
-    //    private final Navigation navigation = new Navigation();
     private Date createdAt;
-    //    private Location location;
     private Double latitude;
     private Double longitude;
     private Integer satellitesNum;
@@ -47,16 +40,4 @@ public class MonitoringPackage {
     private final List<Integer> can32BitList = new ArrayList<>();
     private final List<Double> extendedTags = new ArrayList<>();
 
-//    @Override
-//    public String toString() {
-//        return "MonitoringPackage{" +
-//                "regInfo=" + regInfo + "," + "\r\n" +
-//                "device=" + device + "," + "\r\n" +
-//                "navigation=" + navigation + "," + "\r\n" +
-//                "userTags=" + userTags + ", " + "analogInputs=" + analogInputs + ", " +
-//                "tempSensors=" + tempSensors + ", " + "fuelSensors=" + fuelSensors + "," + "\r\n" +
-//                "can8Bit=" + can8BitList + ", " + "can16Bit=" + can16BitList + ", " + "can32Bit=" + can32BitList + "," + "\r\n" +
-//                "extTags=" + extendedTags + "," + "\r\n" +
-//                '}' + "\r\n";
-//    }
 }
