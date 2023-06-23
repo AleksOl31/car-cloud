@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.alexanna.carcloud.model.DecodedResultPacket;
-import ru.alexanna.carcloud.model.MonitoringPackage;
+import ru.alexanna.carcloud.dto.DecodedResultPacket;
+import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 import java.util.ArrayList;

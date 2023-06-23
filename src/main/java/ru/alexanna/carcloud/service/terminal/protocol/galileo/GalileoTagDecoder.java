@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.alexanna.carcloud.model.FuelSensor;
-import ru.alexanna.carcloud.model.TempSensor;
+import ru.alexanna.carcloud.dto.FuelSensor;
+import ru.alexanna.carcloud.dto.TempSensor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

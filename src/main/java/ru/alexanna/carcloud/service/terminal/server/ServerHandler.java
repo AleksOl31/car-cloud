@@ -7,12 +7,13 @@ import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.alexanna.carcloud.model.DecodedResultPacket;
-import ru.alexanna.carcloud.model.RegInfo;
+import ru.alexanna.carcloud.dto.DecodedResultPacket;
+import ru.alexanna.carcloud.dto.RegInfo;
 import ru.alexanna.carcloud.service.services.MonitoringDataService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
 //            log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
+            updatedDecodedResultPacket.getMonitoringPackages().forEach(System.out::println);
             monitoringDataService.saveAll(updatedDecodedResultPacket.getMonitoringPackages());
             ctx.write(updatedDecodedResultPacket.getResponse());
         } else {
@@ -39,7 +41,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
-        if (channelsMap.get(ctx.channel()) == null) {
+        if (Objects.isNull(channelsMap.get(ctx.channel()))) {
             channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().get(0).getRegInfo());
         } else {
             decodedResultPacket.getMonitoringPackages().forEach(monitoringPackage -> monitoringPackage.setRegInfo(channelsMap.get(ctx.channel())));

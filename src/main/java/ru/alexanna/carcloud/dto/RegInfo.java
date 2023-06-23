@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.model;
+package ru.alexanna.carcloud.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
