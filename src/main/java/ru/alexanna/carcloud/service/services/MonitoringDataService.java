@@ -17,12 +17,12 @@ public class MonitoringDataService {
     private final TerminalMessageRepository messageRepository;
     private final MappingUtils mappingUtils;
 
-    public void save(List<MonitoringPackage> monitoringPackageList) {
+    public List<TerminalMessage> saveAll(List<MonitoringPackage> monitoringPackageList) {
         List<TerminalMessage> terminalMessageList = monitoringPackageList.stream()
                 .map(mappingUtils::mapToTerminalMessage)
                 .filter(terminalMessage -> terminalMessage.getImei() != null)
                 .filter(terminalMessage -> terminalMessage.getCreatedAt() != null)
                 .collect(Collectors.toList());
-        messageRepository.saveAll(terminalMessageList);
+        return messageRepository.saveAll(terminalMessageList);
     }
 }

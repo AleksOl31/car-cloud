@@ -31,7 +31,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
 //            log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
-            monitoringDataService.save(updatedDecodedResultPacket.getMonitoringPackages());
+            monitoringDataService.saveAll(updatedDecodedResultPacket.getMonitoringPackages());
             ctx.write(updatedDecodedResultPacket.getResponse());
         } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
