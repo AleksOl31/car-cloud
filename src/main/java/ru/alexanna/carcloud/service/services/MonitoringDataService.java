@@ -8,7 +8,6 @@ import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.repositories.TerminalMessageRepository;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,8 +20,8 @@ public class MonitoringDataService {
     public List<TerminalMessage> saveAll(List<MonitoringPackage> monitoringPackageList) {
         List<TerminalMessage> terminalMessageList = monitoringPackageList.stream()
                 .map(mappingUtils::mapToTerminalMessage)
-                .filter(terminalMessage -> Objects.nonNull(terminalMessage.getImei()))
-                .filter(terminalMessage -> Objects.nonNull(terminalMessage.getCreatedAt()))
+//                .filter(terminalMessage -> Objects.nonNull(terminalMessage.getImei()))
+//                .filter(terminalMessage -> Objects.nonNull(terminalMessage.getCreatedAt()))
                 .collect(Collectors.toList());
         return messageRepository.saveAll(terminalMessageList);
     }

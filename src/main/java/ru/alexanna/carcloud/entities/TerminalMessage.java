@@ -17,6 +17,7 @@ public class TerminalMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String imei;
     private Integer deviceId;
     private Integer hardVer;
@@ -26,6 +27,8 @@ public class TerminalMessage {
     private Integer batteryVol;
     private Integer deviceTemp;
     private Integer status;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
     private Date createdAt;
     private Double latitude;
     private Double longitude;

@@ -31,7 +31,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof DecodedResultPacket) {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
-//            log.debug("Input buffer: {}", updatedDecodedResultPacket.getMonitoringPackages());
+            //TODO Удалить эту строку
             updatedDecodedResultPacket.getMonitoringPackages().forEach(System.out::println);
             monitoringDataService.saveAll(updatedDecodedResultPacket.getMonitoringPackages());
             ctx.write(updatedDecodedResultPacket.getResponse());
@@ -42,7 +42,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
         if (Objects.isNull(channelsMap.get(ctx.channel()))) {
-            channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().get(0).getRegInfo());
+            channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().remove(0).getRegInfo());
         } else {
             decodedResultPacket.getMonitoringPackages().forEach(monitoringPackage -> monitoringPackage.setRegInfo(channelsMap.get(ctx.channel())));
         }
