@@ -27,6 +27,12 @@ public class MappingUtils {
                 .course(monitoringPackage.getCourse())
                 .height(monitoringPackage.getHeight())
                 .hdop(monitoringPackage.getHdop())
+                .userTags(monitoringPackage.getUserTags())
+                .analogInputs(monitoringPackage.getAnalogInputs())
+                .can8BitList(monitoringPackage.getCan8BitList())
+                .can16BitList(monitoringPackage.getCan16BitList())
+                .can32BitList(monitoringPackage.getCan32BitList())
+                .extendedTags(monitoringPackage.getExtendedTags())
                 .build();
     }
 }
