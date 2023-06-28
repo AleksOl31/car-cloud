@@ -29,6 +29,7 @@ public class MappingUtils {
                 .hdop(monitoringPackage.getHdop())
                 .userTags(monitoringPackage.getUserTags())
                 .analogInputs(monitoringPackage.getAnalogInputs())
+                .fuelSensors(monitoringPackage.getFuelSensors())
                 .can8BitList(monitoringPackage.getCan8BitList())
                 .can16BitList(monitoringPackage.getCan16BitList())
                 .can32BitList(monitoringPackage.getCan32BitList())

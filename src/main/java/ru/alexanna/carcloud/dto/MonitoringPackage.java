@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @NoArgsConstructor
@@ -33,8 +31,8 @@ public class MonitoringPackage {
     private Double hdop;
     private final List<Integer> userTags = new ArrayList<>();
     private final List<Integer> analogInputs = new ArrayList<>();
-    private final List<TempSensor> tempSensors = new ArrayList<>();
-    private final List<FuelSensor> fuelSensors = new ArrayList<>();
+    private final Set<TempSensor> tempSensors = new HashSet<>();
+    private final Set<FuelSensor> fuelSensors = new HashSet<>();
     private final List<Integer> can8BitList = new ArrayList<>();
     private final List<Integer> can16BitList = new ArrayList<>();
     private final List<Integer> can32BitList = new ArrayList<>();

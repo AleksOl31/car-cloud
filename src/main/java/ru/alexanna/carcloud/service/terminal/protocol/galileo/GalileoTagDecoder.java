@@ -14,22 +14,27 @@ import java.util.List;
 
 public class GalileoTagDecoder {
 
+    // Hard version
     public static Integer tag01(ByteBuf byteBuf) {
         return (int) byteBuf.readUnsignedByte();
     }
 
+    // Soft version
     public static Integer tag02(ByteBuf byteBuf) {
         return tag01(byteBuf);
     }
 
+    // IMEI
     public static String tag03(ByteBuf byteBuf) {
         return byteBuf.readCharSequence(GalileoTag.length(0x03), StandardCharsets.US_ASCII).toString();
     }
 
+    // Device ID
     public static Integer tag04(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
+    // Record number
     public static Integer tag10(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
@@ -74,26 +79,32 @@ public class GalileoTagDecoder {
         return new MotionInfo(speed, course);
     }
 
+    // Height, m
     public static int tag34(ByteBuf byteBuf) {
         return byteBuf.readShortLE();
     }
 
+    // HDOP
     public static int tag35(ByteBuf byteBuf) {
         return byteBuf.readUnsignedByte();
     }
 
+    // Device status
     public static int tag40(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
+    // Supply voltage
     public static int tag41(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
+    // Battery voltage
     public static int tag42(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
+    // Device temperature
     public static int tag43(ByteBuf byteBuf) {
         return byteBuf.readByte();
     }
@@ -108,16 +119,18 @@ public class GalileoTagDecoder {
     }
 
     // RS485[0] - RS485[2]: ДУТ без температуры
-    public static FuelSensor tag60_62(ByteBuf byteBuf) {
+    public static FuelSensor tag60_62(ByteBuf byteBuf, int tag) {
         int fuelLevel = byteBuf.readUnsignedShortLE();
-        return new FuelSensor(fuelLevel);
+        int address = tag - 0x60;
+        return new FuelSensor(address, fuelLevel, -127);
     }
 
     // RS485[3] - RS485[15]: ДУТ с температурой
-    public static FuelSensor tag63_6F(ByteBuf byteBuf) {
+    public static FuelSensor tag63_6F(ByteBuf byteBuf, int tag) {
+        int address = tag - 0x60;
         int fuelLevel = byteBuf.readUnsignedShortLE();
         int fuelTemp = byteBuf.readByte();
-        return new FuelSensor(fuelLevel, fuelTemp);
+        return new FuelSensor(address, fuelLevel, fuelTemp);
     }
 
     // 1-Wire: Термодатчики

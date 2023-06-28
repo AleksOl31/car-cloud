@@ -120,7 +120,7 @@ public class GalileoPackageParser implements PackageParser {
             case 0x60:
             case 0x61:
             case 0x62:
-                monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tag60_62(byteBuf));
+                monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tag60_62(byteBuf, tag));
                 break;
             case 0x63:
             case 0x64:
@@ -135,7 +135,7 @@ public class GalileoPackageParser implements PackageParser {
             case 0x6D:
             case 0x6E:
             case 0x6F:
-                monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tag63_6F(byteBuf));
+                monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tag63_6F(byteBuf, tag));
                 break;
             case 0x70:
             case 0x71:

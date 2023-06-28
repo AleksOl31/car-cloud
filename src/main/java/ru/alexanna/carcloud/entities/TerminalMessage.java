@@ -1,11 +1,10 @@
 package ru.alexanna.carcloud.entities;
 
 import lombok.*;
+import ru.alexanna.carcloud.dto.FuelSensor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @NoArgsConstructor
@@ -41,8 +40,11 @@ public class TerminalMessage {
     private Integer height;
     private Double hdop;
 
-    /* private final List<TempSensor> tempSensors = new ArrayList<>();
- private final List<FuelSensor> fuelSensors = new ArrayList<>();*/
+    /* private final Set<TempSensor> tempSensors = new HashSet<>();*/
+    @ElementCollection
+    @CollectionTable(name = "fuel_sensors")
+    @AttributeOverride(name = "address", column = @Column(name = "sens_id", nullable = false))
+    private Set<FuelSensor> fuelSensors = new HashSet<>();
     @ElementCollection
     @CollectionTable(name = "user_tags")
     @OrderColumn(name = "tags_order")
