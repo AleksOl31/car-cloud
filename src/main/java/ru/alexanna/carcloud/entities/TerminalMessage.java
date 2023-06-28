@@ -2,6 +2,7 @@ package ru.alexanna.carcloud.entities;
 
 import lombok.*;
 import ru.alexanna.carcloud.dto.FuelSensor;
+import ru.alexanna.carcloud.dto.TempSensor;
 
 import javax.persistence.*;
 import java.util.*;
@@ -40,7 +41,9 @@ public class TerminalMessage {
     private Integer height;
     private Double hdop;
 
-    /* private final Set<TempSensor> tempSensors = new HashSet<>();*/
+    @ElementCollection
+    @CollectionTable(name = "temp_sensors")
+    private Set<TempSensor> tempSensors = new HashSet<>();
     @ElementCollection
     @CollectionTable(name = "fuel_sensors")
     @AttributeOverride(name = "address", column = @Column(name = "sens_id", nullable = false))
