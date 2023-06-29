@@ -13,16 +13,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+
 public class MonitoringDataService {
-    private final TerminalMessageRepository messageRepository;
+    private final TerminalMessageRepository terminalMessageRepository;
     private final MappingUtils mappingUtils;
 
+    @SuppressWarnings("UnusedReturnValue")
     public List<TerminalMessage> saveAll(List<MonitoringPackage> monitoringPackageList) {
         List<TerminalMessage> terminalMessageList = monitoringPackageList.stream()
                 .map(mappingUtils::mapToTerminalMessage)
 //                .filter(terminalMessage -> Objects.nonNull(terminalMessage.getImei()))
 //                .filter(terminalMessage -> Objects.nonNull(terminalMessage.getCreatedAt()))
                 .collect(Collectors.toList());
-        return messageRepository.saveAll(terminalMessageList);
+        return terminalMessageRepository.saveAll(terminalMessageList);
     }
 }

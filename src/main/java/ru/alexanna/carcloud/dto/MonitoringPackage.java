@@ -13,22 +13,10 @@ import java.util.*;
 @Setter
 @ToString
 public class MonitoringPackage {
-    private RegInfo regInfo = new RegInfo();
-    private Integer recordNum;
-    private Integer supplyVol;
-    private Integer batteryVol;
-    private Integer deviceTemp;
-    private Integer status;
     private Date createdAt;
-    private Double latitude;
-    private Double longitude;
-    private Integer satellitesNum;
-    private Integer correctness;
-    private Boolean correct;
-    private Double speed;
-    private Double course;
-    private Integer height;
-    private Double hdop;
+    private RegInfo regInfo = new RegInfo();
+    private DeviceInfo deviceInfo = new DeviceInfo();
+    private NavigationInfo navigationInfo = new NavigationInfo();
     private final List<Integer> userTags = new ArrayList<>();
     private final List<Integer> analogInputs = new ArrayList<>();
     private final Set<TempSensor> tempSensors = new HashSet<>();

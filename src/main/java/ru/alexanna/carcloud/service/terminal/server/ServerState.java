@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.dto;
+package ru.alexanna.carcloud.service.terminal.server;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

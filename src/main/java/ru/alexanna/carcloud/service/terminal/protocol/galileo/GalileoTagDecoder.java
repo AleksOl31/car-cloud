@@ -122,7 +122,7 @@ public class GalileoTagDecoder {
     public static FuelSensor tag60_62(ByteBuf byteBuf, int tag) {
         int fuelLevel = byteBuf.readUnsignedShortLE();
         int address = tag - 0x60;
-        return new FuelSensor(address, fuelLevel, -127);
+        return new FuelSensor(address, fuelLevel, -128);
     }
 
     // RS485[3] - RS485[15]: ДУТ с температурой

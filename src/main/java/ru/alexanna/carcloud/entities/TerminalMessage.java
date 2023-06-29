@@ -46,7 +46,7 @@ public class TerminalMessage {
     private Set<TempSensor> tempSensors = new HashSet<>();
     @ElementCollection
     @CollectionTable(name = "fuel_sensors")
-    @AttributeOverride(name = "address", column = @Column(name = "sens_id", nullable = false))
+    @AttributeOverride(name = "address", column = @Column(name = "id", nullable = false))
     private Set<FuelSensor> fuelSensors = new HashSet<>();
     @ElementCollection
     @CollectionTable(name = "user_tags")
