@@ -9,9 +9,12 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class MonitoringObject {
+public class ItemDto {
     private Long id;
     private String imei;
     private String name;
-    private String phoneNum;
+    private String phoneNum1;
+    private String phoneNum2;
+    private String deviceType;
+    private String description;
 }
