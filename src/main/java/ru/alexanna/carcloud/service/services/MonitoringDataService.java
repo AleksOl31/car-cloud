@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
+import ru.alexanna.carcloud.repositories.ItemRepository;
 import ru.alexanna.carcloud.repositories.TerminalMessageRepository;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 public class MonitoringDataService {
     private final TerminalMessageRepository terminalMessageRepository;
+    private final ItemRepository itemRepository;
     private final MappingUtils mappingUtils;
 
     @SuppressWarnings("UnusedReturnValue")

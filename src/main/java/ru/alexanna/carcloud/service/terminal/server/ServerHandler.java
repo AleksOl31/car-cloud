@@ -8,17 +8,21 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
+import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.dto.RegInfo;
 import ru.alexanna.carcloud.service.services.MonitoringDataService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+//    private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
     private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
+    private boolean isAuthorized = false;
     private final MonitoringDataService monitoringDataService;
 
     @Override
@@ -30,24 +34,37 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof DecodedResultPacket) {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
-            DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
+            if (isAuthorized) {
+                saveMessages(decodedResultPacket.getMonitoringPackages());
+                ctx.write(decodedResultPacket.getResponse());
+            } else
+                login();
+ /*           DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
             //TODO Удалить эту строку
             updatedDecodedResultPacket.getMonitoringPackages().forEach(System.out::println);
             monitoringDataService.saveAll(updatedDecodedResultPacket.getMonitoringPackages());
-            ctx.write(updatedDecodedResultPacket.getResponse());
+            ctx.write(updatedDecodedResultPacket.getResponse());*/
         } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
     }
 
-    private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
+    private void saveMessages(List<MonitoringPackage> monitoringPackages) {
+
+    }
+
+    private void login() {
+
+    }
+
+/*    private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
         if (Objects.isNull(channelsMap.get(ctx.channel()))) {
             channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().remove(0).getRegInfo());
         } else {
             decodedResultPacket.getMonitoringPackages().forEach(monitoringPackage -> monitoringPackage.setRegInfo(channelsMap.get(ctx.channel())));
         }
         return decodedResultPacket;
-    }
+    }*/
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {

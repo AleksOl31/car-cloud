@@ -18,6 +18,9 @@ public class TerminalMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
     @Column(nullable = false, updatable = false)
     private String imei;
     private Integer deviceId;
@@ -79,4 +82,18 @@ public class TerminalMessage {
     @Column(name = "tag_value")
     private List<Double> extendedTags = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TerminalMessage that = (TerminalMessage) o;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
