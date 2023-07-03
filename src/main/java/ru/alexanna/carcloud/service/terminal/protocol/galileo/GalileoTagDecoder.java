@@ -159,7 +159,7 @@ public class GalileoTagDecoder {
         List<Double> extendedTags = new ArrayList<>();
         int extTagLength = byteBuf.readShortLE();
         int bytesCount = 0;
-        //FIXME обработать все варианты тэгов (Здесь только 4 байтные)
+        // FIXME обработать все варианты тэгов (Здесь только 4 байтные)
         while (bytesCount < extTagLength) {
             int tagNum = byteBuf.readUnsignedShortLE();
             int tagValue = byteBuf.readIntLE();

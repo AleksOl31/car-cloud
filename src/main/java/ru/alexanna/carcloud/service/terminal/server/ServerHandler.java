@@ -9,19 +9,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
-import ru.alexanna.carcloud.dto.RegInfo;
+import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.service.services.MonitoringDataService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-//    private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
-    private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
+    //    private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
+    private final Map<Channel, Item> channelsMap = new HashMap<>();
     private boolean isAuthorized = false;
     private final MonitoringDataService monitoringDataService;
 
@@ -35,36 +32,29 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof DecodedResultPacket) {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             if (isAuthorized) {
-                saveMessages(decodedResultPacket.getMonitoringPackages());
+                //TODO Удалить эту строку
+//                decodedResultPacket.getMonitoringPackages().forEach(System.out::println);
+                saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
                 ctx.write(decodedResultPacket.getResponse());
-            } else
-                login();
- /*           DecodedResultPacket updatedDecodedResultPacket = updateRegInfo(ctx, decodedResultPacket);
-            //TODO Удалить эту строку
-            updatedDecodedResultPacket.getMonitoringPackages().forEach(System.out::println);
-            monitoringDataService.saveAll(updatedDecodedResultPacket.getMonitoringPackages());
-            ctx.write(updatedDecodedResultPacket.getResponse());*/
+            } else {
+                login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
+                ctx.write(decodedResultPacket.getResponse());
+            }
         } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
     }
 
-    private void saveMessages(List<MonitoringPackage> monitoringPackages) {
-
+    private void saveMonitoringPackages(ChannelHandlerContext ctx, List<MonitoringPackage> monitoringPackages) {
+        monitoringDataService.saveAll(monitoringPackages, channelsMap.get(ctx.channel()));
     }
 
-    private void login() {
-
+    private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
+        String receivedImei = monitoringPackage.getRegInfo().getImei();
+        Item registeredItem = monitoringDataService.findItemByImei(receivedImei).orElseThrow();
+        channelsMap.put(ctx.channel(), registeredItem);
+        isAuthorized = true;
     }
-
-/*    private DecodedResultPacket updateRegInfo(ChannelHandlerContext ctx, DecodedResultPacket decodedResultPacket) {
-        if (Objects.isNull(channelsMap.get(ctx.channel()))) {
-            channelsMap.put(ctx.channel(), decodedResultPacket.getMonitoringPackages().remove(0).getRegInfo());
-        } else {
-            decodedResultPacket.getMonitoringPackages().forEach(monitoringPackage -> monitoringPackage.setRegInfo(channelsMap.get(ctx.channel())));
-        }
-        return decodedResultPacket;
-    }*/
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {

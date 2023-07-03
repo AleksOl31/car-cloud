@@ -1,14 +1,16 @@
 package ru.alexanna.carcloud.service.services;
 
 import org.springframework.stereotype.Service;
+import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
 
 @Service
 public class MappingUtils {
-    public TerminalMessage mapToTerminalMessage(MonitoringPackage monitoringPackage) {
+    public TerminalMessage mapToTerminalMessage(MonitoringPackage monitoringPackage, Item item) {
         return TerminalMessage.builder()
                 .imei(monitoringPackage.getRegInfo().getImei())
+                .item(item)
                 .deviceId(monitoringPackage.getRegInfo().getDeviceId())
                 .hardVer(monitoringPackage.getRegInfo().getHardVer())
                 .softVer(monitoringPackage.getRegInfo().getSoftVer())

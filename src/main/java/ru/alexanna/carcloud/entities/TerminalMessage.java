@@ -21,7 +21,7 @@ public class TerminalMessage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
-    @Column(nullable = false, updatable = false)
+//    @Column(nullable = false, updatable = false)
     private String imei;
     private Integer deviceId;
     private Integer hardVer;
