@@ -32,9 +32,9 @@ public class MonitoringDataService {
         return terminalMessageRepository.saveAll(terminalMessageList);
     }
 
-/*    public List<Item> findAllItems() {
+    public List<Item> findAllItems() {
         return itemRepository.findAll();
-    }*/
+    }
 
     public Optional<Item> findItemByImei(String imei) {
         return itemRepository.findByImei(imei);

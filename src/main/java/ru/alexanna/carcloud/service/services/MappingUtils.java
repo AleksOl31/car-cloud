@@ -1,6 +1,7 @@
 package ru.alexanna.carcloud.service.services;
 
 import org.springframework.stereotype.Service;
+import ru.alexanna.carcloud.dto.ItemDto;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
@@ -37,6 +38,19 @@ public class MappingUtils {
                 .can16BitList(monitoringPackage.getCan16BitList())
                 .can32BitList(monitoringPackage.getCan32BitList())
                 .extendedTags(monitoringPackage.getExtendedTags())
+                .build();
+    }
+
+    public ItemDto mapToItemDto(Item item) {
+        return ItemDto.builder()
+                .id(item.getId())
+                .imei(item.getImei())
+                .name(item.getName())
+                .phoneNum1(item.getPhoneNum1())
+                .phoneNum2(item.getPhoneNum2())
+                .deviceType(item.getDeviceType())
+                .description(item.getDescription())
+                .terminalMessages(item.getTerminalMessages())
                 .build();
     }
 }
