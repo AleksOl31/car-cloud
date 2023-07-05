@@ -28,7 +28,7 @@ public class Item {
     private String phoneNum2;
     private String deviceType;
     private String description;
-    @OneToMany(mappedBy = "item", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private Set<TerminalMessage> terminalMessages = new HashSet<>();
 
 /*    public void add(TerminalMessage terminalMessage) {

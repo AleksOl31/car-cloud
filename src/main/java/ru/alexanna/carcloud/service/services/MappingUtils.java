@@ -1,10 +1,11 @@
 package ru.alexanna.carcloud.service.services;
 
 import org.springframework.stereotype.Service;
-import ru.alexanna.carcloud.dto.ItemDto;
+import ru.alexanna.carcloud.dto.*;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
-import ru.alexanna.carcloud.dto.MonitoringPackage;
+
+import java.util.stream.Collectors;
 
 @Service
 public class MappingUtils {
@@ -39,8 +40,24 @@ public class MappingUtils {
                 .can32BitList(monitoringPackage.getCan32BitList())
                 .extendedTags(monitoringPackage.getExtendedTags())
                 .build();
-        item.getTerminalMessages().add(terminalMessage);
+//        item.getTerminalMessages().add(terminalMessage);
         return terminalMessage;
+    }
+    public MonitoringPackage mapToMonitoringPackage(TerminalMessage tm) {
+        return MonitoringPackage.builder()
+                .createdAt(tm.getCreatedAt())
+                .deviceInfo(new DeviceInfo(tm.getRecordNum(), tm.getSupplyVol(), tm.getBatteryVol(), tm.getDeviceTemp(), tm.getStatus()))
+                .regInfo(new RegInfo(tm.getImei(), tm.getDeviceId(), tm.getHardVer(), tm.getSoftVer()))
+                .navigationInfo(new NavigationInfo(tm.getLatitude(), tm.getLongitude(), tm.getSatellitesNum(), tm.getCorrectness(), tm.getCorrect(), tm.getSpeed(), tm.getCourse(), tm.getHeight(), tm.getHdop()))
+                .analogInputs(tm.getAnalogInputs())
+                .fuelSensors(tm.getFuelSensors())
+                .userTags(tm.getUserTags())
+                .tempSensors(tm.getTempSensors())
+                .can8BitList(tm.getCan8BitList())
+                .can16BitList(tm.getCan16BitList())
+                .can32BitList(tm.getCan32BitList())
+                .extendedTags(tm.getExtendedTags())
+                .build();
     }
 
     public ItemDto mapToItemDto(Item item) {
@@ -52,7 +69,7 @@ public class MappingUtils {
                 .phoneNum2(item.getPhoneNum2())
                 .deviceType(item.getDeviceType())
                 .description(item.getDescription())
-                .terminalMessages(item.getTerminalMessages())
+                .monitoringPackages(item.getTerminalMessages().stream().map(this::mapToMonitoringPackage).collect(Collectors.toSet()))
                 .build();
     }
 }

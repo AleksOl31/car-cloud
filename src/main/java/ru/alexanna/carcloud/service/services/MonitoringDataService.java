@@ -39,4 +39,8 @@ public class MonitoringDataService {
     public Optional<Item> findItemByImei(String imei) {
         return itemRepository.findByImei(imei);
     }
+
+    public Optional<Item> findItemById(Long id) {
+        return itemRepository.findById(id);
+    }
 }
