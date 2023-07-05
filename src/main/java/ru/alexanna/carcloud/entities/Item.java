@@ -31,7 +31,7 @@ public class Item {
     @OneToMany(mappedBy = "item", fetch = FetchType.EAGER)
     private Set<TerminalMessage> terminalMessages = new HashSet<>();
 
-    public void add(TerminalMessage terminalMessage) {
+/*    public void add(TerminalMessage terminalMessage) {
         terminalMessages.add(terminalMessage);
-    }
+    }*/
 }

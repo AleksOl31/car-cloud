@@ -88,11 +88,14 @@ public class TerminalMessage {
 
         TerminalMessage that = (TerminalMessage) o;
 
-        return id.equals(that.id);
+        if (!item.equals(that.item)) return false;
+        return createdAt.equals(that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = item.hashCode();
+        result = 31 * result + createdAt.hashCode();
+        return result;
     }
 }

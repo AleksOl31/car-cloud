@@ -9,7 +9,7 @@ import ru.alexanna.carcloud.dto.MonitoringPackage;
 @Service
 public class MappingUtils {
     public TerminalMessage mapToTerminalMessage(MonitoringPackage monitoringPackage, Item item) {
-        return TerminalMessage.builder()
+        TerminalMessage terminalMessage = TerminalMessage.builder()
                 .imei(monitoringPackage.getRegInfo().getImei())
                 .item(item)
                 .deviceId(monitoringPackage.getRegInfo().getDeviceId())
@@ -39,6 +39,8 @@ public class MappingUtils {
                 .can32BitList(monitoringPackage.getCan32BitList())
                 .extendedTags(monitoringPackage.getExtendedTags())
                 .build();
+        item.getTerminalMessages().add(terminalMessage);
+        return terminalMessage;
     }
 
     public ItemDto mapToItemDto(Item item) {
