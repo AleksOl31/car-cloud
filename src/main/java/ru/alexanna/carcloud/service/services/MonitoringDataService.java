@@ -9,6 +9,8 @@ import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.repositories.ItemRepository;
 import ru.alexanna.carcloud.repositories.TerminalMessageRepository;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,5 +44,15 @@ public class MonitoringDataService {
 
     public Optional<Item> findItemById(Long id) {
         return itemRepository.findById(id);
+    }
+
+    public List<MonitoringPackage> findTerminalMessagesLastHour(Long id) {
+        Date currentDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.HOUR, -1);
+        Date timeFrom = calendar.getTime();
+        List<TerminalMessage> terminalMessages = terminalMessageRepository.findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(id, timeFrom, currentDate);
+        return terminalMessages.stream().map(mappingUtils::mapToMonitoringPackage).collect(Collectors.toList());
     }
 }

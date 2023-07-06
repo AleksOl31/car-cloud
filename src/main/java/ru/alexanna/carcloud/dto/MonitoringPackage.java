@@ -3,7 +3,7 @@ package ru.alexanna.carcloud.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 
 import java.util.*;
@@ -19,12 +19,9 @@ public class MonitoringPackage {
 //    @JsonProperty("crt")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date createdAt;
-//    @JsonProperty("rInf")
     @JsonIgnore
     private RegInfo regInfo = new RegInfo();
-//    @JsonProperty("dInf")
     private DeviceInfo deviceInfo = new DeviceInfo();
-//    @JsonProperty("nav")
     private NavigationInfo navigationInfo = new NavigationInfo();
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Integer> userTags = new ArrayList<>();
@@ -41,7 +38,6 @@ public class MonitoringPackage {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Integer> can32BitList = new ArrayList<>();
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//    @JsonProperty("exTgs")
     private List<Double> extendedTags = new ArrayList<>();
 
 }

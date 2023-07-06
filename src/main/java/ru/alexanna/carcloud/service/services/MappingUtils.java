@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public class MappingUtils {
     public TerminalMessage mapToTerminalMessage(MonitoringPackage monitoringPackage, Item item) {
         TerminalMessage terminalMessage = TerminalMessage.builder()
-                .imei(monitoringPackage.getRegInfo().getImei())
                 .item(item)
                 .deviceId(monitoringPackage.getRegInfo().getDeviceId())
                 .hardVer(monitoringPackage.getRegInfo().getHardVer())
@@ -47,7 +46,6 @@ public class MappingUtils {
         return MonitoringPackage.builder()
                 .createdAt(tm.getCreatedAt())
                 .deviceInfo(new DeviceInfo(tm.getRecordNum(), tm.getSupplyVol(), tm.getBatteryVol(), tm.getDeviceTemp(), tm.getStatus()))
-                .regInfo(new RegInfo(tm.getImei(), tm.getDeviceId(), tm.getHardVer(), tm.getSoftVer()))
                 .navigationInfo(new NavigationInfo(tm.getLatitude(), tm.getLongitude(), tm.getSatellitesNum(), tm.getCorrectness(), tm.getCorrect(), tm.getSpeed(), tm.getCourse(), tm.getHeight(), tm.getHdop()))
                 .analogInputs(tm.getAnalogInputs())
                 .fuelSensors(tm.getFuelSensors())
@@ -69,7 +67,7 @@ public class MappingUtils {
                 .phoneNum2(item.getPhoneNum2())
                 .deviceType(item.getDeviceType())
                 .description(item.getDescription())
-                .monitoringPackages(item.getTerminalMessages().stream().map(this::mapToMonitoringPackage).collect(Collectors.toSet()))
+//                .monitoringPackages(item.getTerminalMessages().stream().map(this::mapToMonitoringPackage).collect(Collectors.toSet()))
                 .build();
     }
 }
