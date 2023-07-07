@@ -14,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import ru.alexanna.carcloud.service.services.MonitoringDataService;
+import ru.alexanna.carcloud.service.services.ItemService;
+import ru.alexanna.carcloud.service.services.TerminalMessageService;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Service
@@ -26,7 +27,6 @@ public class BaseNettyServer implements Runnable {
     private ChannelFuture channelFuture;
     @Getter
     @Setter
-//    private boolean running = false;
     @Value("${terminal.server.socket-read-timeout}")
     private int soTimeout;
     @Value("${terminal.server.galileo-port}")
@@ -35,15 +35,15 @@ public class BaseNettyServer implements Runnable {
     private int scoutPort;
     private final PackageParser galileoPackageParser;
     private final PackageParser scoutPackageParser;
-//    private final ServerState serverState;
-    private final MonitoringDataService monitoringDataService;
+    private final TerminalMessageService terminalMessageService;
+    private final ItemService itemService;
 
 
-    public BaseNettyServer(PackageParser galileoPackageParser, MonitoringDataService monitoringDataService) {
+    public BaseNettyServer(PackageParser galileoPackageParser, TerminalMessageService terminalMessageService, ItemService itemService) {
         this.galileoPackageParser = galileoPackageParser;
         this.scoutPackageParser = galileoPackageParser;
-//        this.serverState.setRunning(false);
-        this.monitoringDataService = monitoringDataService;
+        this.itemService = itemService;
+        this.terminalMessageService = terminalMessageService;
     }
 
     @Override
@@ -52,17 +52,14 @@ public class BaseNettyServer implements Runnable {
         worker = new NioEventLoopGroup();
         try {
             ServerBootstrap galileoBootstrap = getServerBootstrap(boss, worker, galileoPackageParser);
-
             ChannelFuture galFuture = galileoBootstrap.bind(galileoPort).sync();
 
             // server started!
-//            galFuture.channel().closeFuture().sync(); // blocking operation
             ServerBootstrap scoutBootstrap = getServerBootstrap(boss, worker, scoutPackageParser);
             ChannelFuture sctFuture = scoutBootstrap.bind(scoutPort).sync();
 
             // server started!
             channelFuture = galFuture;
-//            setRunning(true);
             galFuture.channel().closeFuture().sync(); // blocking operation
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -83,7 +80,7 @@ public class BaseNettyServer implements Runnable {
                         socketChannel.pipeline().addLast(new LoggingHandler());
                         socketChannel.pipeline().addLast(new ReadTimeoutHandler(soTimeout));
                         socketChannel.pipeline().addLast(new GalileoPackageDecoder(packageParser));
-                        socketChannel.pipeline().addLast(new ServerHandler(monitoringDataService));
+                        socketChannel.pipeline().addLast(new ServerHandler(terminalMessageService, itemService));
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)
@@ -96,7 +93,6 @@ public class BaseNettyServer implements Runnable {
             boss.shutdownGracefully().sync();
             worker.shutdownGracefully().sync();
             channelFuture.channel().closeFuture().sync();
-//            setRunning(false);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

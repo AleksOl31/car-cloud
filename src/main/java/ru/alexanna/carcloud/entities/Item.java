@@ -27,6 +27,11 @@ public class Item {
     @Column(name = "phone_num2")
     private String phoneNum2;
     private String deviceType;
+    private Integer deviceId;
+    private Integer hardVer;
+    private Integer softVer;
+    @Column(name = "con_state")
+    private Boolean connectionState;
     private String description;
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private Set<TerminalMessage> terminalMessages = new HashSet<>();

@@ -3,7 +3,6 @@ package ru.alexanna.carcloud.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
-
 import java.util.Set;
 
 @Getter
@@ -20,6 +19,9 @@ public class ItemDto {
     private String phoneNum2;
     private String deviceType;
     private String description;
+    private Integer hardVer;
+    private Integer softVer;
+    private Boolean connectionState;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<MonitoringPackage> monitoringPackages;
 }

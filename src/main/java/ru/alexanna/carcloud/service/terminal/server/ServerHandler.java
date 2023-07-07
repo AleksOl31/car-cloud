@@ -10,17 +10,18 @@ import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.entities.Item;
-import ru.alexanna.carcloud.service.services.MonitoringDataService;
+import ru.alexanna.carcloud.service.services.ItemService;
+import ru.alexanna.carcloud.service.services.TerminalMessageService;
 
 import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    //    private final Map<Channel, RegInfo> channelsMap = new HashMap<>();
     private final Map<Channel, Item> channelsMap = new HashMap<>();
     private boolean isAuthorized = false;
-    private final MonitoringDataService monitoringDataService;
+    private final TerminalMessageService terminalMessageService;
+    private final ItemService itemService;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -32,8 +33,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof DecodedResultPacket) {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             if (isAuthorized) {
-                //TODO Удалить эту строку
-//                decodedResultPacket.getMonitoringPackages().forEach(System.out::println);
                 saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
                 ctx.write(decodedResultPacket.getResponse());
             } else {
@@ -46,13 +45,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void saveMonitoringPackages(ChannelHandlerContext ctx, List<MonitoringPackage> monitoringPackages) {
-        monitoringDataService.saveAll(monitoringPackages, channelsMap.get(ctx.channel()));
+        terminalMessageService.saveAll(monitoringPackages, channelsMap.get(ctx.channel()));
     }
 
     private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
         String receivedImei = monitoringPackage.getRegInfo().getImei();
-        Item registeredItem = monitoringDataService.findItemByImei(receivedImei).orElseThrow();
-        channelsMap.put(ctx.channel(), registeredItem);
+        Item registeredItem = itemService.findItemByImei(receivedImei).orElseThrow();
+        registeredItem.setDeviceId(monitoringPackage.getRegInfo().getDeviceId());
+        registeredItem.setHardVer(monitoringPackage.getRegInfo().getHardVer());
+        registeredItem.setSoftVer(monitoringPackage.getRegInfo().getSoftVer());
+        registeredItem.setConnectionState(true);
+        Item savedItem = itemService.save(registeredItem);
+        channelsMap.put(ctx.channel(), savedItem);
         isAuthorized = true;
     }
 
@@ -66,6 +70,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
+        Item item = channelsMap.get(ctx.channel());
+        item.setConnectionState(false);
+        itemService.save(item);
         channelsMap.remove(ctx.channel());
         log.debug("Client disconnected {}", ctx.channel().remoteAddress());
     }

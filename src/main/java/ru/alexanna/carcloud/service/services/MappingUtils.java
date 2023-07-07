@@ -5,16 +5,16 @@ import ru.alexanna.carcloud.dto.*;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 
-import java.util.stream.Collectors;
 
 @Service
 public class MappingUtils {
     public TerminalMessage mapToTerminalMessage(MonitoringPackage monitoringPackage, Item item) {
-        TerminalMessage terminalMessage = TerminalMessage.builder()
+        //        item.getTerminalMessages().add(terminalMessage);
+        return TerminalMessage.builder()
                 .item(item)
-                .deviceId(monitoringPackage.getRegInfo().getDeviceId())
-                .hardVer(monitoringPackage.getRegInfo().getHardVer())
-                .softVer(monitoringPackage.getRegInfo().getSoftVer())
+//                .deviceId(monitoringPackage.getRegInfo().getDeviceId())
+//                .hardVer(monitoringPackage.getRegInfo().getHardVer())
+//                .softVer(monitoringPackage.getRegInfo().getSoftVer())
                 .recordNum(monitoringPackage.getDeviceInfo().getRecordNum())
                 .supplyVol(monitoringPackage.getDeviceInfo().getSupplyVol())
                 .batteryVol(monitoringPackage.getDeviceInfo().getBatteryVol())
@@ -39,8 +39,6 @@ public class MappingUtils {
                 .can32BitList(monitoringPackage.getCan32BitList())
                 .extendedTags(monitoringPackage.getExtendedTags())
                 .build();
-//        item.getTerminalMessages().add(terminalMessage);
-        return terminalMessage;
     }
     public MonitoringPackage mapToMonitoringPackage(TerminalMessage tm) {
         return MonitoringPackage.builder()
@@ -66,8 +64,10 @@ public class MappingUtils {
                 .phoneNum1(item.getPhoneNum1())
                 .phoneNum2(item.getPhoneNum2())
                 .deviceType(item.getDeviceType())
+                .hardVer(item.getHardVer())
+                .softVer(item.getSoftVer())
+                .connectionState(item.getConnectionState())
                 .description(item.getDescription())
-//                .monitoringPackages(item.getTerminalMessages().stream().map(this::mapToMonitoringPackage).collect(Collectors.toSet()))
                 .build();
     }
 }

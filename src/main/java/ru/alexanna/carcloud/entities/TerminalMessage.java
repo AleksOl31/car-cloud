@@ -22,9 +22,9 @@ public class TerminalMessage {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 //    private String imei;
-    private Integer deviceId;
-    private Integer hardVer;
-    private Integer softVer;
+//    private Integer deviceId;
+//    private Integer hardVer;
+//    private Integer softVer;
     private Integer recordNum;
     private Integer supplyVol;
     private Integer batteryVol;
