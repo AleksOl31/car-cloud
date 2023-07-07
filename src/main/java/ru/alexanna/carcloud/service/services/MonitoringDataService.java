@@ -2,7 +2,10 @@ package ru.alexanna.carcloud.service.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import ru.alexanna.carcloud.dto.ItemDto;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
@@ -34,25 +37,42 @@ public class MonitoringDataService {
         return terminalMessageRepository.saveAll(terminalMessageList);
     }
 
-    public List<Item> findAllItems() {
-        return itemRepository.findAll();
+    public List<ItemDto> findAllItems() {
+        return itemRepository.findAll().stream().map(mappingUtils::mapToItemDto)
+                .collect(Collectors.toList());
     }
 
     public Optional<Item> findItemByImei(String imei) {
         return itemRepository.findByImei(imei);
     }
 
-    public Optional<Item> findItemById(Long id) {
-        return itemRepository.findById(id);
+    public ItemDto findItemById(Long id) {
+        Item item = itemRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,"Item with ID " + id + " not found"));
+        return mappingUtils.mapToItemDto(item);
     }
 
-    public List<MonitoringPackage> findTerminalMessagesLastHour(Long id) {
-        Date currentDate = new Date();
+    // FIXME привести рефакторинг (использовать findTerminalMessages(Long, Long, Long))
+    public List<MonitoringPackage> findTerminalMessagesLastHour(Long itemId) {
+        Date currentTime = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
+        calendar.setTime(currentTime);
         calendar.add(Calendar.HOUR, -1);
         Date timeFrom = calendar.getTime();
-        List<TerminalMessage> terminalMessages = terminalMessageRepository.findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(id, timeFrom, currentDate);
+        List<TerminalMessage> terminalMessages = terminalMessageRepository
+                .findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(itemId, timeFrom, currentTime);
+        return mapToMonitoringPackage(terminalMessages);
+    }
+
+    public List<MonitoringPackage> findTerminalMessages(Long itemId, Long timeFrom, Long timeTo) {
+        Date tFrom = new Date(timeFrom);
+        Date tTo = new Date(timeTo);
+        List<TerminalMessage> terminalMessages = terminalMessageRepository
+                .findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(itemId, tFrom, tTo);
+        return mapToMonitoringPackage(terminalMessages);
+    }
+
+    private List<MonitoringPackage> mapToMonitoringPackage(List<TerminalMessage> terminalMessages) {
         return terminalMessages.stream().map(mappingUtils::mapToMonitoringPackage).collect(Collectors.toList());
     }
 }

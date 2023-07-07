@@ -17,17 +17,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemsController {
     private final MonitoringDataService monitoringDataService;
-    private final MappingUtils mappingUtils;
 
     @GetMapping("api/v1/items")
     public List<ItemDto> findAllItems() {
-        return monitoringDataService.findAllItems().stream().map(mappingUtils::mapToItemDto)
-                .collect(Collectors.toList());
+        return monitoringDataService.findAllItems();
     }
 
     @GetMapping("api/v1/item/{id}")
     public ItemDto findItemById(@PathVariable Long id) {
-        return mappingUtils.mapToItemDto(monitoringDataService.findItemById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"Item with ID " + id + " not found")));
+        return monitoringDataService.findItemById(id);
     }
 }
