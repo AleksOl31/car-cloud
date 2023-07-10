@@ -50,7 +50,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
         String receivedImei = monitoringPackage.getRegInfo().getImei();
-        Item registeredItem = itemService.findItemByImei(receivedImei).orElseThrow();
+        Item registeredItem = itemService.findItem(receivedImei).orElseThrow();
         registeredItem.setDeviceId(monitoringPackage.getRegInfo().getDeviceId());
         registeredItem.setHardVer(monitoringPackage.getRegInfo().getHardVer());
         registeredItem.setSoftVer(monitoringPackage.getRegInfo().getSoftVer());
@@ -70,10 +70,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        Item item = channelsMap.get(ctx.channel());
+        Item item = channelsMap.remove(ctx.channel());
         item.setConnectionState(false);
         itemService.save(item);
-        channelsMap.remove(ctx.channel());
         log.debug("Client disconnected {}", ctx.channel().remoteAddress());
     }
 

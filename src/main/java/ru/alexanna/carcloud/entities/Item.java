@@ -30,13 +30,10 @@ public class Item {
     private Integer deviceId;
     private Integer hardVer;
     private Integer softVer;
-    @Column(name = "con_state")
+    @Column(name = "con_state", nullable = false)
     private Boolean connectionState;
     private String description;
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private Set<TerminalMessage> terminalMessages = new HashSet<>();
 
-/*    public void add(TerminalMessage terminalMessage) {
-        terminalMessages.add(terminalMessage);
-    }*/
 }

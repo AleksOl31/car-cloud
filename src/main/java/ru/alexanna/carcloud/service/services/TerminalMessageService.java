@@ -53,10 +53,10 @@ public class TerminalMessageService {
         Date tTo = new Date(timeTo);
         List<TerminalMessage> terminalMessages = terminalMessageRepository
                 .findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(itemId, tFrom, tTo);
-        return mapToMonitoringPackage(terminalMessages);
+        return mapToMonitoringPackages(terminalMessages);
     }
 
-    private List<MonitoringPackage> mapToMonitoringPackage(List<TerminalMessage> terminalMessages) {
+    private List<MonitoringPackage> mapToMonitoringPackages(List<TerminalMessage> terminalMessages) {
         return terminalMessages.stream().map(mappingUtils::mapToMonitoringPackage).collect(Collectors.toList());
     }
 }

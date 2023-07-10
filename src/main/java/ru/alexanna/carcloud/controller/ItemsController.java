@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemsController {
     private final ItemService itemService;
-
+    // FIXME: Маппинг в DTO (ItemDto) делать, наверное, тут
     @GetMapping("api/v1/items")
     public List<ItemDto> findAllItems() {
         return itemService.findAllItems();
@@ -21,6 +21,6 @@ public class ItemsController {
 
     @GetMapping("api/v1/item/{id}")
     public ItemDto findItemById(@PathVariable Long id) {
-        return itemService.findItemById(id);
+        return itemService.findItem(id);
     }
 }

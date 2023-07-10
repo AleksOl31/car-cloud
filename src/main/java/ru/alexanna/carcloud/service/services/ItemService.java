@@ -25,11 +25,11 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Item> findItemByImei(String imei) {
+    public Optional<Item> findItem(String imei) {
         return itemRepository.findByImei(imei);
     }
 
-    public ItemDto findItemById(Long id) {
+    public ItemDto findItem(Long id) {
         Item item = itemRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND,"Item with ID " + id + " not found"));
         return mappingUtils.mapToItemDto(item);

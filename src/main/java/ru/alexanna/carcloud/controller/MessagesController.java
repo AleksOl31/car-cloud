@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessagesController {
     private final TerminalMessageService terminalMessageService;
-
+// FIXME: Маппинг в DTO (MonitoringPackage) делать, наверное, тут
     @GetMapping("api/v1/messages/load-last-hour/{id}")
     public List<MonitoringPackage> loadMessagesLastHour(@PathVariable Long id) {
         return terminalMessageService.findTerminalMessagesLastHour(id);
