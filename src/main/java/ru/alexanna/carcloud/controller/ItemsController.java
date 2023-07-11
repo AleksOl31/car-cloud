@@ -48,7 +48,9 @@ public class ItemsController {
     public void deleteItem(@PathVariable Long id) {
         try {
             itemService.deleteItem(id);
-        } catch (EmptyResultDataAccessException e) {}
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not deleted because missing");
+        }
     }
 }
 
