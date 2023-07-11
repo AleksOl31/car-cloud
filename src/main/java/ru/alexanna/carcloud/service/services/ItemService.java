@@ -11,7 +11,6 @@ import ru.alexanna.carcloud.repositories.ItemRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,23 +19,30 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MappingUtils mappingUtils;
 
-    public List<ItemDto> findAllItems() {
-        return itemRepository.findAll().stream().map(mappingUtils::mapToItemDto)
-                .collect(Collectors.toList());
+    public List<Item> findAllItems() {
+        return itemRepository.findAll();
     }
 
     public Optional<Item> findItem(String imei) {
         return itemRepository.findByImei(imei);
     }
 
-    public ItemDto findItem(Long id) {
-        Item item = itemRepository.findById(id).orElseThrow(() ->
+    public Item findItem(Long id) {
+        return itemRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND,"Item with ID " + id + " not found"));
-        return mappingUtils.mapToItemDto(item);
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public Item save(Item item) {
         return itemRepository.save(item);
+    }
+
+    public Item createNewItem(ItemDto itemDto) {
+        Item item = mappingUtils.mapToItem(itemDto);
+        return save(item);
+    }
+
+    public void deleteItem(Long id) {
+        itemRepository.deleteById(id);
     }
 }

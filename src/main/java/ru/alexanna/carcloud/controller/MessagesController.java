@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.service.services.TerminalMessageService;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,12 +15,12 @@ public class MessagesController {
     private final TerminalMessageService terminalMessageService;
 // FIXME: Маппинг в DTO (MonitoringPackage) делать, наверное, тут
     @GetMapping("api/v1/messages/load-last-hour/{id}")
-    public List<MonitoringPackage> loadMessagesLastHour(@PathVariable Long id) {
+    public Iterable<MonitoringPackage> loadMessagesLastHour(@PathVariable Long id) {
         return terminalMessageService.findTerminalMessagesLastHour(id);
     }
 
     @GetMapping("api/v1/messages/{id}")
-    public List<MonitoringPackage> loadMessagesInterval(@PathVariable Long id, @RequestParam Long timeFrom, @RequestParam Long timeTo) {
+    public Iterable<MonitoringPackage> loadMessagesInterval(@PathVariable Long id, @RequestParam Long timeFrom, @RequestParam Long timeTo) {
         return terminalMessageService.findTerminalMessages(id, timeFrom, timeTo);
     }
 }

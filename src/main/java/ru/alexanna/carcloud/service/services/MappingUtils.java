@@ -67,4 +67,16 @@ public class MappingUtils {
                 .description(item.getDescription())
                 .build();
     }
+
+    public Item mapToItem(ItemDto itemDto) {
+        return Item.builder()
+                .imei(itemDto.getImei())
+                .name(itemDto.getName())
+                .phoneNum1(itemDto.getPhoneNum1())
+                .phoneNum2(itemDto.getPhoneNum2())
+                .deviceType(itemDto.getDeviceType())
+                .description(itemDto.getDescription())
+                .connectionState(itemDto.getConnectionState())
+                .build();
+    }
 }
