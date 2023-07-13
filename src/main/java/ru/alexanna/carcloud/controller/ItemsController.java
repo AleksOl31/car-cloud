@@ -13,7 +13,7 @@ import ru.alexanna.carcloud.service.services.MappingUtils;
 import java.util.stream.Collectors;
 
 @RestController
-//@CrossOrigin(origins = {"http://carcloud:8189"})
+@CrossOrigin(origins = "*")
 @RequestMapping(path = "api/v1", produces = "application/json")
 @RequiredArgsConstructor
 public class ItemsController {

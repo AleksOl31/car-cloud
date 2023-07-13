@@ -7,6 +7,7 @@ import ru.alexanna.carcloud.service.services.TerminalMessageService;
 
 
 @RestController
+@CrossOrigin(origins = "*") //(origins = "http://10.70.29.158:8189")
 @RequestMapping(path = "api/v1/messages", produces = "application/json")
 @RequiredArgsConstructor
 public class MessagesController {
