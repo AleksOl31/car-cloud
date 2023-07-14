@@ -3,7 +3,11 @@ package ru.alexanna.carcloud.service.services;
 import org.springframework.stereotype.Service;
 import ru.alexanna.carcloud.dto.*;
 import ru.alexanna.carcloud.entities.Item;
+import ru.alexanna.carcloud.entities.ItemParameter;
 import ru.alexanna.carcloud.entities.TerminalMessage;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -53,6 +57,7 @@ public class MappingUtils {
     }
 
     public ItemDto mapToItemDto(Item item) {
+        Set<ItemParameterDto> parametersDto = item.getParameters().stream().map(this::mapToParameterDto).collect(Collectors.toSet());
         return ItemDto.builder()
                 .id(item.getId())
                 .imei(item.getImei())
@@ -65,6 +70,7 @@ public class MappingUtils {
                 .softVer(item.getSoftVer())
                 .connectionState(item.getConnectionState())
                 .description(item.getDescription())
+                .parameters(parametersDto)
                 .build();
     }
 
@@ -77,6 +83,15 @@ public class MappingUtils {
                 .deviceType(itemDto.getDeviceType())
                 .description(itemDto.getDescription())
                 .connectionState(itemDto.getConnectionState())
+//                .parameters(itemDto.getParameters())
+                .build();
+    }
+
+    public ItemParameterDto mapToParameterDto(ItemParameter itemParameter) {
+        return ItemParameterDto.builder()
+                .name(itemParameter.getName())
+                .index(itemParameter.getIndex())
+                .type(itemParameter.getType())
                 .build();
     }
 }

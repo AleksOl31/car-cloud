@@ -8,8 +8,8 @@ import javax.persistence.*;
 import java.util.*;
 
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Data
 @Builder
 @Entity

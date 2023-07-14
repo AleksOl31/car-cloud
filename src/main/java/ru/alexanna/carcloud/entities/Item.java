@@ -34,5 +34,6 @@ public class Item {
     private String description;
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private Set<TerminalMessage> terminalMessages = new HashSet<>();
-
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
+    private Set<ItemParameter> parameters = new HashSet<>();
 }
