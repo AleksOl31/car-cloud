@@ -91,7 +91,7 @@ public class MappingUtils {
         return ItemParameterDto.builder()
                 .name(itemParameter.getName())
                 .index(itemParameter.getIndex())
-                .type(itemParameter.getType())
+                .type(itemParameter.getType().getName())
                 .build();
     }
 }

@@ -26,7 +26,17 @@ public class ItemParameter {
     private Type type;
 
     public enum Type {
-        FUEL, TEMP, ANALOG_INPUT, USER, CAN_ONE_BYTE, CAN_TWO_BYTE, CAN_FOUR_BYTE, EXTENDED_TAGS
+        FUEL("fuelSensors"), TEMP("tempSensors"), ANALOG_INPUT("analogInputs"), USER("userTags"), CAN_ONE_BYTE("can8BitList"),
+        CAN_TWO_BYTE("can16BitList"), CAN_FOUR_BYTE("can32BitList"), EXTENDED_TAGS("extendedTags");
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     @Override
