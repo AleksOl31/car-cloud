@@ -1,7 +1,6 @@
 package ru.alexanna.carcloud.dto;
 
 import lombok.*;
-import ru.alexanna.carcloud.entities.ItemParameter;
 
 @Getter
 @Setter
@@ -9,6 +8,7 @@ import ru.alexanna.carcloud.entities.ItemParameter;
 @Builder
 @ToString
 public class ItemParameterDto {
+    private Long id;
     private Integer index;
     private String type;
     private String name;
