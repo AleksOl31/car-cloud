@@ -1,8 +1,7 @@
 package ru.alexanna.carcloud.service.terminal.server;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.*;
 import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +33,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             if (isAuthorized) {
                 saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
-                ctx.write(decodedResultPacket.getResponse());
+                log.debug("Insert completed");
+                sendResponse(ctx, decodedResultPacket.getResponse());
             } else {
                 login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
-                ctx.write(decodedResultPacket.getResponse());
+                sendResponse(ctx, decodedResultPacket.getResponse());
             }
         } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
@@ -46,6 +46,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private void saveMonitoringPackages(ChannelHandlerContext ctx, List<MonitoringPackage> monitoringPackages) {
         terminalMessageService.saveAll(monitoringPackages, channelsMap.get(ctx.channel()));
+    }
+
+    private void sendResponse(ChannelHandlerContext ctx, ByteBuf response) {
+        ChannelFuture future = ctx.write(response);
+        // TODO: здесь должен быть COMMIT или ROLLBACK транзакции
+        future.addListener((ChannelFutureListener) channelFuture -> {
+            if (channelFuture.isSuccess() || channelFuture.isDone())
+                log.debug("Reply sent");
+            else
+                log.debug("Response was not delivered");
+        });
     }
 
     private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
