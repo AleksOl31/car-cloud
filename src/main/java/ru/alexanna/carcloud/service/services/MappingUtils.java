@@ -90,9 +90,8 @@ public class MappingUtils {
     public ItemParameterDto mapToParameterDto(ItemParameter itemParameter) {
         return ItemParameterDto.builder()
                 .id(itemParameter.getId())
-//                .name(itemParameter.getName())
-//                .index(itemParameter.getIndex())
                 .type(itemParameter.getType().getName())
+                .names(itemParameter.getNames())
                 .build();
     }
 }

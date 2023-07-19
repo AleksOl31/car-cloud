@@ -2,14 +2,17 @@ package ru.alexanna.carcloud.dto;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString
 public class ItemParameterDto {
     private Long id;
-    private Integer index;
     private String type;
-    private String name;
+    private Set<ParameterName> names ;
+
 }

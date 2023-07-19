@@ -1,6 +1,7 @@
 package ru.alexanna.carcloud.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -8,9 +9,10 @@ import javax.persistence.Embeddable;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Embeddable
 public class ParameterName {
-    @Column(name = "num", nullable = false)
+    @Column(nullable = false)
     private Integer index;
     @Column(nullable = false)
     private String name;

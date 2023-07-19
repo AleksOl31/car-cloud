@@ -24,6 +24,7 @@ public class ItemParameter {
     private Item item;
     @ElementCollection
     @CollectionTable(name = "param_names", joinColumns = @JoinColumn(name = "parameter_id"))
+    @AttributeOverride(name = "index", column = @Column(name = "num", nullable = false))
     private Set<ParameterName> names = new HashSet<>();
     @Enumerated(EnumType.STRING)
     private Type type;
