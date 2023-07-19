@@ -4,8 +4,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.alexanna.carcloud.dto.ParameterName;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @AllArgsConstructor
@@ -19,10 +22,10 @@ public class ItemParameter {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
-    @Column(nullable = false)
-    private Integer index;
-    @Column(nullable = false)
-    private String name;
+    @ElementCollection
+    @CollectionTable(name = "param_names", joinColumns = @JoinColumn(name = "parameter_id"))
+    private Set<ParameterName> names = new HashSet<>();
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     public enum Type {
@@ -47,14 +50,12 @@ public class ItemParameter {
         ItemParameter that = (ItemParameter) o;
 
         if (!item.equals(that.item)) return false;
-        if (!name.equals(that.name)) return false;
         return type == that.type;
     }
 
     @Override
     public int hashCode() {
         int result = item.hashCode();
-        result = 31 * result + name.hashCode();
         result = 31 * result + type.hashCode();
         return result;
     }
