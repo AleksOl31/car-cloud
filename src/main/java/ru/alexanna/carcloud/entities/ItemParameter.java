@@ -25,6 +25,7 @@ public class ItemParameter {
     @ElementCollection
     @CollectionTable(name = "param_names", joinColumns = @JoinColumn(name = "parameter_id"))
     @AttributeOverride(name = "index", column = @Column(name = "num", nullable = false))
+    @org.hibernate.annotations.OrderBy(clause = "num")
     private Set<ParameterName> names = new HashSet<>();
     @Enumerated(EnumType.STRING)
     private Type type;
