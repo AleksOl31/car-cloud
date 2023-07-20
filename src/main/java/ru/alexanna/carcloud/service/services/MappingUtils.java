@@ -6,6 +6,7 @@ import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.ItemParameter;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class MappingUtils {
     }
 
     public ItemDto mapToItemDto(Item item) {
-        Set<ItemParameterDto> parametersDto = item.getParameters().stream().map(this::mapToParameterDto).collect(Collectors.toSet());
+        Set<ItemParameterDto> parametersDto = item.getParameters().stream().map(this::mapToItemParameterDto).collect(Collectors.toSet());
         return ItemDto.builder()
                 .id(item.getId())
                 .imei(item.getImei())
@@ -87,11 +88,13 @@ public class MappingUtils {
                 .build();
     }
 
-    public ItemParameterDto mapToParameterDto(ItemParameter itemParameter) {
+    public ItemParameterDto mapToItemParameterDto(ItemParameter itemParameter) {
         return ItemParameterDto.builder()
                 .id(itemParameter.getId())
                 .type(itemParameter.getType().getName())
-                .names(itemParameter.getNames())
+                .names(itemParameter.getNames().stream()
+                        .sorted(Comparator.comparingInt(ParameterName::getIndex))
+                        .collect(Collectors.toList()))
                 .build();
     }
 }

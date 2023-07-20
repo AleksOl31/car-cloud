@@ -10,6 +10,7 @@ import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.service.services.ItemService;
 import ru.alexanna.carcloud.service.services.MappingUtils;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,6 +24,7 @@ public class ItemsController {
     @GetMapping("/items")
     public Iterable<ItemDto> findAllItems() {
         return itemService.findAllItems().stream().map(mappingUtils::mapToItemDto)
+                .sorted(Comparator.comparing(ItemDto::getName))
                 .collect(Collectors.toList());
     }
 
