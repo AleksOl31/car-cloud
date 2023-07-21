@@ -52,7 +52,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ChannelFuture future = ctx.write(response);
         // TODO: здесь должен быть COMMIT или ROLLBACK транзакции
         future.addListener((ChannelFutureListener) channelFuture -> {
-            if (channelFuture.isSuccess() || channelFuture.isDone())
+            if (channelFuture.isSuccess() && channelFuture.isDone())
                 log.debug("Reply sent");
             else
                 log.debug("Response was not delivered");
