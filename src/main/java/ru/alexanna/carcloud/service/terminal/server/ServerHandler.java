@@ -21,6 +21,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private boolean isAuthorized = false;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
+    //FIXME: удалить переменную
+    static int count = 0;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -34,8 +36,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (isAuthorized) {
                 saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
                 log.debug("Insert completed");
+//                count++;
                 sendResponse(ctx, decodedResultPacket.getResponse());
             } else {
+//                count++;
                 login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
                 sendResponse(ctx, decodedResultPacket.getResponse());
             }
@@ -49,6 +53,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void sendResponse(ChannelHandlerContext ctx, ByteBuf response) {
+        if (count == 4) {
+            count = 0;
+            throw new RuntimeException("New error message");
+        }
         ChannelFuture future = ctx.write(response);
         // TODO: здесь должен быть COMMIT или ROLLBACK транзакции
         future.addListener((ChannelFutureListener) channelFuture -> {

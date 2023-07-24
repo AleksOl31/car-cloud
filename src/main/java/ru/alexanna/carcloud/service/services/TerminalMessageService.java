@@ -2,14 +2,14 @@ package ru.alexanna.carcloud.service.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.repositories.TerminalMessageRepository;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,14 +25,24 @@ public class TerminalMessageService {
         List<TerminalMessage> terminalMessageList = monitoringPackageList.stream()
                 .map(monitoringPackage -> mappingUtils.mapToTerminalMessage(monitoringPackage, item))
                 .collect(Collectors.toList());
-        return terminalMessageRepository.saveAll(terminalMessageList);
+        List<TerminalMessage> result = new ArrayList<>();
+        for (TerminalMessage terminalMessage : terminalMessageList) {
+            try {
+                result.add(terminalMessageRepository.save(terminalMessage));
+            } catch (DataIntegrityViolationException e) {
+                String rootCause = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : "null";
+                log.error("Database save error: {}. Root cause: {}",
+                        e.getLocalizedMessage(), rootCause);
+            }
+        }
+        return result;
     }
 
     /**
      * Получить сообщения за последний час от itemId.
      *
-     * @return  Список сообщений {@code List<MonitoringPackage>} .
-     * @see     #findTerminalMessages
+     * @return Список сообщений {@code List<MonitoringPackage>} .
+     * @see #findTerminalMessages
      */
     public List<MonitoringPackage> findTerminalMessagesLastHour(Long itemId) {
         // Найти временную точку, меньшую на 1 ч (например, от текущей)
