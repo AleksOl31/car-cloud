@@ -30,9 +30,8 @@ public class TerminalMessageService {
             try {
                 result.add(terminalMessageRepository.save(terminalMessage));
             } catch (DataIntegrityViolationException e) {
-                String rootCause = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : "null";
-                log.error("Database save error: {}. Root cause: {}",
-                        e.getLocalizedMessage(), rootCause);
+                String errorMsg = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage();
+                log.error("Database save error: {}", errorMsg);
             }
         }
         return result;
