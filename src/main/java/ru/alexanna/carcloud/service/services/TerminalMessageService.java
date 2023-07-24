@@ -27,14 +27,22 @@ public class TerminalMessageService {
                 .collect(Collectors.toList());
         List<TerminalMessage> result = new ArrayList<>();
         for (TerminalMessage terminalMessage : terminalMessageList) {
-            try {
-                result.add(terminalMessageRepository.save(terminalMessage));
-            } catch (DataIntegrityViolationException e) {
-                String errorMsg = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage();
-                log.error("Database save error: {}", errorMsg);
-            }
+            result.add(this.save(terminalMessage));
         }
         return result;
+    }
+
+    public TerminalMessage save(TerminalMessage terminalMessage) {
+        TerminalMessage tm = null;
+        try {
+            tm = terminalMessageRepository.save(terminalMessage);
+        } catch (DataIntegrityViolationException e) {
+            String errorMsg = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage();
+            log.error("Database save error: {}", errorMsg);
+        } catch (RuntimeException e) {
+            log.error(e.getLocalizedMessage());
+        }
+        return tm;
     }
 
     /**
