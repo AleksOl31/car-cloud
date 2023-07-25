@@ -21,8 +21,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private boolean isAuthorized = false;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
-    //FIXME: удалить переменную
-    static int count = 0;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -35,14 +33,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
             if (isAuthorized) {
                 saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
-                log.debug("Insert completed");
-//                count++;
-                sendResponse(ctx, decodedResultPacket.getResponse());
             } else {
-//                count++;
                 login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
-                sendResponse(ctx, decodedResultPacket.getResponse());
             }
+            sendResponse(ctx, decodedResultPacket.getResponse());
         } else {
             throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
@@ -50,21 +44,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private void saveMonitoringPackages(ChannelHandlerContext ctx, List<MonitoringPackage> monitoringPackages) {
         terminalMessageService.saveAll(monitoringPackages, channelsMap.get(ctx.channel()));
-    }
-
-    private void sendResponse(ChannelHandlerContext ctx, ByteBuf response) {
-        if (count == 4) {
-            count = 0;
-            throw new RuntimeException("New error message");
-        }
-        ChannelFuture future = ctx.write(response);
-        // TODO: здесь должен быть COMMIT или ROLLBACK транзакции
-        future.addListener((ChannelFutureListener) channelFuture -> {
-            if (channelFuture.isSuccess() && channelFuture.isDone())
-                log.debug("Reply sent");
-            else
-                log.debug("Response was not delivered");
-        });
     }
 
     private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
@@ -77,6 +56,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         Item savedItem = itemService.save(registeredItem);
         channelsMap.put(ctx.channel(), savedItem);
         isAuthorized = true;
+    }
+
+    private void sendResponse(ChannelHandlerContext ctx, ByteBuf response) {
+        ctx.write(response);
     }
 
     @Override
