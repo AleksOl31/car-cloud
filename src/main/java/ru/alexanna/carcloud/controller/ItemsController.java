@@ -1,6 +1,7 @@
 package ru.alexanna.carcloud.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import ru.alexanna.carcloud.service.services.ItemService;
 import ru.alexanna.carcloud.service.services.MappingUtils;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -41,9 +43,29 @@ public class ItemsController {
         try {
             Item newItem = itemService.createNewItem(itemDto);
             return mappingUtils.mapToItemDto(newItem);
-        } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            String errorMsg = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage();
+            throw new ResponseStatusException(HttpStatus.CONFLICT, errorMsg);
         }
+    }
+
+    @PatchMapping(path = "/item/{id}", consumes = "application/json")
+    public ItemDto patchItem(@PathVariable Long id, @RequestBody ItemDto patch) {
+        Item item = itemService.findItem(id);
+        if (Objects.nonNull(patch.getImei()))
+            item.setImei(patch.getImei());
+        if (Objects.nonNull(patch.getName()))
+            item.setName(patch.getName());
+        if (Objects.nonNull(patch.getPhoneNum1()))
+            item.setPhoneNum1(patch.getPhoneNum1());
+        if (Objects.nonNull(patch.getPhoneNum2()))
+            item.setPhoneNum2(patch.getPhoneNum2());
+        if (Objects.nonNull(patch.getDeviceType()))
+            item.setDeviceType(patch.getDeviceType());
+        if (Objects.nonNull(patch.getDescription()))
+            item.setDescription(patch.getDescription());
+        Item patchedItem = itemService.save(item);
+        return mappingUtils.mapToItemDto(patchedItem);
     }
 
     @DeleteMapping(path = "/item/{id}")

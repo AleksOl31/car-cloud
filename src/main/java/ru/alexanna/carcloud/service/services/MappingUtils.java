@@ -7,7 +7,7 @@ import ru.alexanna.carcloud.entities.ItemParameter;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 
 import java.util.Comparator;
-import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 
@@ -41,6 +41,7 @@ public class MappingUtils {
                 .extendedTags(monitoringPackage.getExtendedTags())
                 .build();
     }
+
     public MonitoringPackage mapToMonitoringPackage(TerminalMessage tm) {
         return MonitoringPackage.builder()
                 .createdAt(tm.getCreatedAt())
@@ -58,8 +59,7 @@ public class MappingUtils {
     }
 
     public ItemDto mapToItemDto(Item item) {
-        Set<ItemParameterDto> parametersDto = item.getParameters().stream().map(this::mapToItemParameterDto).collect(Collectors.toSet());
-        return ItemDto.builder()
+        ItemDto itemDto = ItemDto.builder()
                 .id(item.getId())
                 .imei(item.getImei())
                 .name(item.getName())
@@ -71,8 +71,12 @@ public class MappingUtils {
                 .softVer(item.getSoftVer())
                 .connectionState(item.getConnectionState())
                 .description(item.getDescription())
-                .parameters(parametersDto)
                 .build();
+        if (item.getParameters() != null)
+            itemDto.setParameters(item.getParameters().stream().map(this::mapToItemParameterDto).collect(Collectors.toSet()));
+        else
+            itemDto.setParameters(new HashSet<>());
+        return itemDto;
     }
 
     public Item mapToItem(ItemDto itemDto) {
