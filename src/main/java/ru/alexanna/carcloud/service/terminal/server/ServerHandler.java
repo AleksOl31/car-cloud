@@ -24,7 +24,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.debug("Client connected with id: {}, R: {}", ctx.channel().id(), ctx.channel().remoteAddress());
+        log.info("Client connected with id: {}, R: {}", ctx.channel().id(), ctx.channel().remoteAddress());
     }
 
     @Override
@@ -75,13 +75,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         Item item = channelsMap.remove(ctx.channel());
         item.setConnectionState(false);
         itemService.save(item);
-        log.debug("Client disconnected {}", ctx.channel().remoteAddress());
+        log.info("Client disconnected {}", ctx.channel().remoteAddress());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (cause instanceof ReadTimeoutException) {
-            log.debug("Socket timed out {}", ctx.channel().remoteAddress());
+            log.info("Socket timed out {}", ctx.channel().remoteAddress());
         } else {
             log.error("An exception occurred with the message: {}", cause.getMessage());
             ctx.close();

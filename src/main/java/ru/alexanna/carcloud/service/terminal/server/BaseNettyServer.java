@@ -62,6 +62,7 @@ public class BaseNettyServer implements Runnable {
             channelFuture = galFuture;
             galFuture.channel().closeFuture().sync(); // blocking operation
         } catch (InterruptedException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         } finally {
             boss.shutdownGracefully();
@@ -94,6 +95,7 @@ public class BaseNettyServer implements Runnable {
             worker.shutdownGracefully().sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
     }

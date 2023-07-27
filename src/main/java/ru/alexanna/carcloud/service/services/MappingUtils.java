@@ -6,8 +6,8 @@ import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.ItemParameter;
 import ru.alexanna.carcloud.entities.TerminalMessage;
 
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 
@@ -75,7 +75,7 @@ public class MappingUtils {
         if (item.getParameters() != null)
             itemDto.setParameters(item.getParameters().stream().map(this::mapToItemParameterDto).collect(Collectors.toSet()));
         else
-            itemDto.setParameters(new HashSet<>());
+            itemDto.setParameters(Collections.EMPTY_SET);
         return itemDto;
     }
 
