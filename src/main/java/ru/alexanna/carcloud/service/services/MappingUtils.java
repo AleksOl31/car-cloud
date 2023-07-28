@@ -75,7 +75,7 @@ public class MappingUtils {
         if (item.getParameters() != null)
             itemDto.setParameters(item.getParameters().stream().map(this::mapToItemParameterDto).collect(Collectors.toSet()));
         else
-            itemDto.setParameters(Collections.EMPTY_SET);
+            itemDto.setParameters(Collections.emptySet());
         return itemDto;
     }
 

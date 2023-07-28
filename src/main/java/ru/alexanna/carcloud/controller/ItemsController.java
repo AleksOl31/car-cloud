@@ -64,8 +64,13 @@ public class ItemsController {
             item.setDeviceType(patch.getDeviceType());
         if (Objects.nonNull(patch.getDescription()))
             item.setDescription(patch.getDescription());
-        Item patchedItem = itemService.save(item);
-        return mappingUtils.mapToItemDto(patchedItem);
+        try {
+            Item patchedItem = itemService.save(item);
+            return mappingUtils.mapToItemDto(patchedItem);
+        } catch (DataIntegrityViolationException e) {
+            String errorMsg = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage();
+            throw new ResponseStatusException(HttpStatus.CONFLICT, errorMsg);
+        }
     }
 
     @DeleteMapping(path = "/item/{id}")
