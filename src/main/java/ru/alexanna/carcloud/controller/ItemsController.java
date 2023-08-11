@@ -64,6 +64,8 @@ public class ItemsController {
             item.setDeviceType(patch.getDeviceType());
         if (Objects.nonNull(patch.getDescription()))
             item.setDescription(patch.getDescription());
+//        if (Objects.nonNull(patch.getParameters()))
+//            item.setParameters(patch.getParameters());
         try {
             Item patchedItem = itemService.save(item);
             return mappingUtils.mapToItemDto(patchedItem);
