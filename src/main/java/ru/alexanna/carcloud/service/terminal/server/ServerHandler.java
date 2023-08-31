@@ -73,8 +73,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Item item = channelsMap.remove(ctx.channel());
-        item.setConnectionState(false);
-        itemService.save(item);
+        if (item != null) {
+            item.setConnectionState(false);
+            itemService.save(item);
+        }
         log.info("Client disconnected {}", ctx.channel().remoteAddress());
     }
 

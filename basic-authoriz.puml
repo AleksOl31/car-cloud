@@ -16,8 +16,10 @@ activate "Spring Security"
 deactivate "Spring Security"
 User -> "Spring Security"++: <b>GET http://localhost:8189/hello.html\nAuthorization Basic ...
 "Spring Security" -> "Spring Security": Аутентификация\nпользователя
+activate "Spring Security"
 "Spring Security" -> "Spring Framework\nDispatcherServlet"++: <b>GET http://localhost:8189/hello.html\nAuthorization Basic ...
 "Spring Framework\nDispatcherServlet" --> "Spring Security"--: <b>200 OK\nContent-type: text/html\n\n<h1>Hello</h1>
+deactivate "Spring Security"
 "Spring Security" --> User--: <b>200 OK\nContent-type: text/html\n\n<h1>Hello</h1>
 
 'Alice -> Bob: Authentication Request
