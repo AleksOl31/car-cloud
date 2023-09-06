@@ -8,6 +8,7 @@ import ru.alexanna.carcloud.entities.TerminalMessage;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 
@@ -80,7 +81,7 @@ public class MappingUtils {
     }
 
     public Item mapToItem(ItemDto itemDto) {
-        return Item.builder()
+        Item item = Item.builder()
                 .imei(itemDto.getImei())
                 .name(itemDto.getName())
                 .phoneNum1(itemDto.getPhoneNum1())
@@ -88,8 +89,11 @@ public class MappingUtils {
                 .deviceType(itemDto.getDeviceType())
                 .description(itemDto.getDescription())
                 .connectionState(itemDto.getConnectionState())
-//                .parameters(itemDto.getParameters())
                 .build();
+        item.setParameters(itemDto.getParameters().stream().map(itemParameterDto ->
+            mapToItemParameter(itemParameterDto, item)).collect(Collectors.toSet()));
+        System.out.println(item);
+        return item;
     }
 
     public ItemParameterDto mapToItemParameterDto(ItemParameter itemParameter) {
@@ -101,4 +105,13 @@ public class MappingUtils {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    public ItemParameter mapToItemParameter(ItemParameterDto itemParameterDto, Item item) {
+        return ItemParameter.builder()
+                .item(item)
+                .type(ItemParameter.Type.fromName(itemParameterDto.getType()))
+                .names(new HashSet<>(itemParameterDto.getNames()))
+                .build();
+    }
+
 }

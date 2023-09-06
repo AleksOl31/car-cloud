@@ -1,5 +1,6 @@
 package ru.alexanna.carcloud.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 @Builder
 @ToString
 public class ItemParameterDto {
+
+    @JsonIgnore
     private Long id;
     private String type;
     private List<ParameterName> names ;

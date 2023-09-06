@@ -1,9 +1,6 @@
 package ru.alexanna.carcloud.entities;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.alexanna.carcloud.dto.ParameterName;
 
 import javax.persistence.*;
@@ -12,7 +9,11 @@ import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @AllArgsConstructor
-@Data
+//@Data
+@Getter
+@Setter
+@Builder
+
 @Entity
 @Table(name = "parameters")
 public class ItemParameter {
@@ -41,6 +42,13 @@ public class ItemParameter {
 
         public String getName() {
             return name;
+        }
+        public static Type fromName(String name) {
+            for (final Type type: values()) {
+                if (type.getName().equalsIgnoreCase(name))
+                    return type;
+            }
+            throw new IllegalStateException();
         }
     }
 
