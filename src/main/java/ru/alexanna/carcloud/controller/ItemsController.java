@@ -58,17 +58,21 @@ public class ItemsController {
             item.setName(patch.getName());
         if (Objects.nonNull(patch.getPhoneNum1()))
             item.setPhoneNum1(patch.getPhoneNum1());
+        else item.setPhoneNum1(null);
         if (Objects.nonNull(patch.getPhoneNum2()))
             item.setPhoneNum2(patch.getPhoneNum2());
+        else item.setPhoneNum2(null);
         if (Objects.nonNull(patch.getDeviceType()))
             item.setDeviceType(patch.getDeviceType());
         if (Objects.nonNull(patch.getDescription()))
             item.setDescription(patch.getDescription());
-        if (Objects.nonNull(patch.getParameters()))
-//            item.setParameters(patch.getParameters());
-            //FIXME: сначала удалить Parameters, потом добавить пропатченные
+        else item.setDescription(null);
+        if (Objects.nonNull(patch.getParameters())) {
+            itemService.deleteAllItemParameters(item.getId());
             item.setParameters(patch.getParameters().stream().map(itemParameterDto ->
                     mappingUtils.mapToItemParameter(itemParameterDto, item)).collect(Collectors.toSet()));
+        } else
+            itemService.deleteAllItemParameters(item.getId());
         try {
             Item patchedItem = itemService.save(item);
             return mappingUtils.mapToItemDto(patchedItem);

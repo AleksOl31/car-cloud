@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.alexanna.carcloud.dto.ItemDto;
 import ru.alexanna.carcloud.entities.Item;
+import ru.alexanna.carcloud.repositories.ItemParameterRepository;
 import ru.alexanna.carcloud.repositories.ItemRepository;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final ItemParameterRepository itemParameterRepository;
     private final MappingUtils mappingUtils;
 
     public List<Item> findAllItems() {
@@ -44,5 +46,8 @@ public class ItemService {
 
     public void deleteItem(Long id) {
         itemRepository.deleteById(id);
+    }
+    public void deleteAllItemParameters(Long itemId) {
+        itemParameterRepository.deleteItemParameterByItem_Id(itemId);
     }
 }
