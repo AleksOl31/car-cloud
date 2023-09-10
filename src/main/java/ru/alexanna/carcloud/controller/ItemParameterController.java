@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "api/v1/parameters", produces = "application/json")
 @RequiredArgsConstructor
-public class ItemParametersController {
+public class ItemParameterController {
     private final ItemParameterService itemParameterService;
     private final MappingUtils mappingUtils;
 
