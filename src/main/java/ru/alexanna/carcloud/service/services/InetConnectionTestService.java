@@ -1,49 +1,53 @@
 package ru.alexanna.carcloud.service.services;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import ru.alexanna.carcloud.configuration.InetConnectionTestProperties;
+import ru.alexanna.carcloud.entities.InetCrashEvent;
+import ru.alexanna.carcloud.repositories.InetCrashRepository;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 @Service
 @PropertySource("classpath:connection.properties")
 @Slf4j
+@RequiredArgsConstructor
+@Getter
 public class InetConnectionTestService {
 
-    private final InetConnectionTestProperties testProperties;
-/*    @Value("${inet.testing.hostname1}")
+    @Value("${inet.testing.hostname1}")
     private String hostname1;
     @Value("${inet.testing.hostname2}")
     private String hostname2;
-    @Value("${inet.testing.timeout}")
+    @Value("${inet.testing.timeout:1000}")
     private int testTimeout;
-    @Value("${inet.testing.period}")
-    private long testPeriod;*/
-
-    public InetConnectionTestService(InetConnectionTestProperties testProperties) {
-        this.testProperties = testProperties;
-        Timer inetTestTimer = new Timer("InetTestingTimer", true);
-        TimerTask inetTestingTask = createInetTestingTask();
-        inetTestTimer.scheduleAtFixedRate(inetTestingTask,5000, 5000);
-    }
+    @Value("${inet.testing.period:5000}")
+    private long testPeriod;
+    private Timer inetTestTimer;
+    private final InetCrashRepository crashRepository;
+    private InetCrashEvent currentCrashEvent;
 
     private TimerTask createInetTestingTask() {
         return new TimerTask() {
             @Override
             public void run() {
                 try {
-                    boolean isHostname1Reachable = InetAddress.getByName(testProperties.getHostname1()).isReachable(1000);
-                    boolean isHostname2Reachable = InetAddress.getByName(testProperties.getHostname2()).isReachable(1000);
-                    if (isHostname1Reachable || isHostname2Reachable)
-                        performReachableAction();
+                    InetAddress inetAddress1 = InetAddress.getByName(hostname1);
+                    InetAddress inetAddress2 = InetAddress.getByName(hostname2);
+                    boolean is1Reached = inetAddress1.isReachable(testTimeout);
+                    boolean is2Reached = inetAddress2.isReachable(testTimeout);
+                    if (is1Reached || is2Reached)
+                        performReachableAction(inetAddress1, inetAddress2, is1Reached, is2Reached);
                     else
-                        performUnreachableAction();
+                        performUnreachableAction(inetAddress1, inetAddress2);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -51,11 +55,37 @@ public class InetConnectionTestService {
         };
     }
 
-    private static void performReachableAction() {
-        log.debug("Internet connection available {}", System.currentTimeMillis());
+    private void performReachableAction(InetAddress inetAddress1, InetAddress inetAddress2, boolean isInet1Reached, boolean isInet2Reached) {
+        if (currentCrashEvent != null) {
+            log.debug("Internet connection available: {} - {}, {} - {}", inetAddress1, isInet1Reached, inetAddress2, isInet2Reached);
+            currentCrashEvent.setEndAt(new Date(System.currentTimeMillis()));
+            crashRepository.save(currentCrashEvent);
+            currentCrashEvent = null;
+        }
     }
 
-    private static void performUnreachableAction() {
-        log.error("Internet connection unavailable {}", System.currentTimeMillis());
+    private void performUnreachableAction(InetAddress inetAddress1, InetAddress inetAddress2) {
+        if (currentCrashEvent == null) {
+            log.error("Internet hosts {} and {} are not reachable: ", inetAddress1, inetAddress2);
+            InetCrashEvent newCrashEvent = new InetCrashEvent();
+            newCrashEvent.setStartAt(new Date(System.currentTimeMillis()));
+            currentCrashEvent = crashRepository.save(newCrashEvent);
+        }
+    }
+
+    public void start() {
+        inetTestTimer = new Timer("InetTestingTimer", true);
+        TimerTask inetTestingTask = createInetTestingTask();
+        inetTestTimer.scheduleAtFixedRate(inetTestingTask,1000, testPeriod);
+        log.info("Inet testing timer started");
+    }
+
+    public void stop() {
+        inetTestTimer.cancel();
+        log.info("Inet test timer stopped");
+    }
+
+    public List<InetCrashEvent> findAllEvents() {
+        return crashRepository.findAll();
     }
 }
