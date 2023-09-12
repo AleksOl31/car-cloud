@@ -49,15 +49,17 @@ public class InetConnectionTestService {
                     else
                         performUnreachableAction(inetAddress1, inetAddress2);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+//                    throw new RuntimeException(e);
+                    //FIXME: добавить действие о недоступности
+                    e.printStackTrace();
                 }
             }
         };
     }
 
     private void performReachableAction(InetAddress inetAddress1, InetAddress inetAddress2, boolean isInet1Reached, boolean isInet2Reached) {
+        log.debug("Internet connection available: {} - {}, {} - {}", inetAddress1, isInet1Reached, inetAddress2, isInet2Reached);
         if (currentCrashEvent != null) {
-            log.debug("Internet connection available: {} - {}, {} - {}", inetAddress1, isInet1Reached, inetAddress2, isInet2Reached);
             currentCrashEvent.setEndAt(new Date(System.currentTimeMillis()));
             crashRepository.save(currentCrashEvent);
             currentCrashEvent = null;
@@ -65,8 +67,8 @@ public class InetConnectionTestService {
     }
 
     private void performUnreachableAction(InetAddress inetAddress1, InetAddress inetAddress2) {
+        log.error("Internet hosts {} and {} are not reachable: ", inetAddress1, inetAddress2);
         if (currentCrashEvent == null) {
-            log.error("Internet hosts {} and {} are not reachable: ", inetAddress1, inetAddress2);
             InetCrashEvent newCrashEvent = new InetCrashEvent();
             newCrashEvent.setStartAt(new Date(System.currentTimeMillis()));
             currentCrashEvent = crashRepository.save(newCrashEvent);
