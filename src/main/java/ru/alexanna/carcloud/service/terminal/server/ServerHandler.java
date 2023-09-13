@@ -65,9 +65,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
-        System.out.println("--------------------------------------------------------------------" +
-                "----------------------------------------------------------------------------");
-        System.out.println();
+//        System.out.println("--------------------------------------------------------------------" +
+//                "----------------------------------------------------------------------------");
+//        System.out.println();
+        log.info("Data received from device with IMEI {} and address {} ", channelsMap.get(ctx.channel()).getImei(), ctx.channel().remoteAddress());
     }
 
     @Override

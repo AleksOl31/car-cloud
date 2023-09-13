@@ -39,9 +39,11 @@ public class InetConnectionTestService {
         return new TimerTask() {
             @Override
             public void run() {
+                InetAddress inetAddress1 = null;
+                InetAddress inetAddress2 = null;
                 try {
-                    InetAddress inetAddress1 = InetAddress.getByName(hostname1);
-                    InetAddress inetAddress2 = InetAddress.getByName(hostname2);
+                    inetAddress1 = InetAddress.getByName(hostname1);
+                    inetAddress2 = InetAddress.getByName(hostname2);
                     boolean is1Reached = inetAddress1.isReachable(testTimeout);
                     boolean is2Reached = inetAddress2.isReachable(testTimeout);
                     if (is1Reached || is2Reached)
@@ -50,7 +52,7 @@ public class InetConnectionTestService {
                         performUnreachableAction(inetAddress1, inetAddress2);
                 } catch (IOException e) {
 //                    throw new RuntimeException(e);
-                    //FIXME: добавить действие о недоступности
+                    performUnreachableAction(inetAddress1, inetAddress2);
                     e.printStackTrace();
                 }
             }
@@ -58,8 +60,8 @@ public class InetConnectionTestService {
     }
 
     private void performReachableAction(InetAddress inetAddress1, InetAddress inetAddress2, boolean isInet1Reached, boolean isInet2Reached) {
-        log.debug("Internet connection available: {} - {}, {} - {}", inetAddress1, isInet1Reached, inetAddress2, isInet2Reached);
         if (currentCrashEvent != null) {
+            log.debug("Internet connection available: {} - {}, {} - {}", inetAddress1, isInet1Reached, inetAddress2, isInet2Reached);
             currentCrashEvent.setEndAt(new Date(System.currentTimeMillis()));
             crashRepository.save(currentCrashEvent);
             currentCrashEvent = null;

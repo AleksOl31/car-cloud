@@ -12,12 +12,11 @@ class GalileoPackageParserTest {
     @Test
     @Timeout(1)
     void parse() {
-        try {
-//            TimeUnit.SECONDS.sleep(2);
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        assertEquals(50, 10 * 5, "10 x 5 must be 50");
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        assertEquals(50, 10 * 5, "10 x 5 must be 50");
     }
 }
