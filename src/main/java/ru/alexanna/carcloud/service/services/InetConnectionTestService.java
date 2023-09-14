@@ -64,7 +64,7 @@ public class InetConnectionTestService {
             try {
                 testSocket.close();
             } catch (IOException e) {
-                log.error("Socket closing error...");
+                log.error("Socket {} closing error...", testSocket.getInetAddress());
             }
         }
     }
