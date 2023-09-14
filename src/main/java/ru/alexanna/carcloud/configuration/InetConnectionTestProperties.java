@@ -12,6 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 public class InetConnectionTestProperties {
     private String hostname1;
     private String hostname2;
+    private int testPort;
     private int testTimeout;
     private long testPeriod;
 }
