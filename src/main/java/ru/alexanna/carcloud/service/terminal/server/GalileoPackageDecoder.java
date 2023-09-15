@@ -3,7 +3,6 @@ package ru.alexanna.carcloud.service.terminal.server;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.util.ResourceLeakDetector;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,8 @@ public class GalileoPackageDecoder extends ReplayingDecoder<Void> {
             ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
             list.add(packageParser.parse(dataBuf));
         } else {
-            throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
+            channelHandlerContext.pipeline().remove(this);
+//            throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
     }
 }

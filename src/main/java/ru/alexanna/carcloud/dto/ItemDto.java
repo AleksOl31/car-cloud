@@ -25,6 +25,6 @@ public class ItemDto {
     private Boolean connectionState;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<MonitoringPackage> monitoringPackages;
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<ItemParameterDto> parameters;
 }
