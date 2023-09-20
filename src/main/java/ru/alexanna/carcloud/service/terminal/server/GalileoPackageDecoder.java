@@ -3,7 +3,7 @@ package ru.alexanna.carcloud.service.terminal.server;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import io.netty.util.ResourceLeakDetector;
+import io.netty.handler.codec.UnsupportedMessageTypeException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
@@ -17,17 +17,21 @@ public class GalileoPackageDecoder extends ReplayingDecoder<Void> {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        byte header = byteBuf.readByte();
-        int packLength = (byteBuf.readShortLE() & 0x7FFF) + 5;
+        final int HEADER_LENGTH = 1;
+        final int DATA_SIZE_LENGTH = 2;
+        final int CRC_LENGTH = 2;
+        byte headerValue = byteBuf.readByte();
+        int dataSize = byteBuf.readShortLE() & 0x7FFF;
+        int fullPackSize = dataSize + HEADER_LENGTH + DATA_SIZE_LENGTH + CRC_LENGTH;
         byteBuf.resetReaderIndex();
-        if (header == 0x01 && packLength <= 1000) {
-            ByteBuf dataBuf = byteBuf.readBytes(packLength).copy(3, packLength - 3);
+        if (headerValue == 0x01 && fullPackSize <= 1000) {
+            ByteBuf dataBuf = byteBuf.readBytes(fullPackSize).slice(3, fullPackSize - 3);
             // FIXME: 06.06.2023 Добавлено в виде опции JVM: -Dio.netty.leakDetectionLevel=advanced
-            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
+//            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
             list.add(packageParser.parse(dataBuf));
         } else {
             channelHandlerContext.pipeline().remove(this);
-//            throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
+            throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
         }
     }
 }

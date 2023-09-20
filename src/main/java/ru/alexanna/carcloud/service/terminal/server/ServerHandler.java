@@ -65,11 +65,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
-//        System.out.println("--------------------------------------------------------------------" +
-//                "----------------------------------------------------------------------------");
-//        System.out.println();
+
         if (channelsMap.get(ctx.channel()) != null)
-            log.info("Data received from device with IMEI {} and address {} ", channelsMap.get(ctx.channel()).getImei(), ctx.channel().remoteAddress());
+            log.info("Data received from device with IMEI {}, name {} and address {} ",
+                    channelsMap.get(ctx.channel()).getImei(),
+                    channelsMap.get(ctx.channel()).getName(),
+                    ctx.channel().remoteAddress());
     }
 
     @Override
@@ -90,6 +91,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             log.error("An exception occurred with the message: {}", cause.getMessage());
             ctx.close();
         }
-//        cause.printStackTrace();
+        cause.printStackTrace();
     }
 }

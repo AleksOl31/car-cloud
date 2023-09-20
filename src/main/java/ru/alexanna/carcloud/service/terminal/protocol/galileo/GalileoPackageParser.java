@@ -22,25 +22,28 @@ public class GalileoPackageParser implements PackageParser {
 
     @Override
     public DecodedResultPacket parse(ByteBuf byteBuf) {
-        List<MonitoringPackage> monitoringPackages = new ArrayList<>();
-        byteBuf.resetReaderIndex();
-        int firstTagInPackage = byteBuf.getByte(0);
-        MonitoringPackage monitoringPackage = new MonitoringPackage();
-        int packageNumber = 0;
-        while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
-            int tag = byteBuf.readUnsignedByte();
-            packageNumber++;
-            GalileoTagDecoder.setMonitoringPackageData(monitoringPackage,tag, byteBuf);
-            int nextTag = byteBuf.getUnsignedByte(byteBuf.readerIndex());
-            if (nextTag == firstTagInPackage && packageNumber != 1 && byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
-                monitoringPackages.add(monitoringPackage);
-                monitoringPackage = new MonitoringPackage();
+        try {
+            List<MonitoringPackage> monitoringPackages = new ArrayList<>();
+            byteBuf.resetReaderIndex();
+            int firstTagInPackage = byteBuf.getByte(0);
+            MonitoringPackage monitoringPackage = new MonitoringPackage();
+            int packageNumber = 0;
+            while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
+                int tag = byteBuf.readUnsignedByte();
+                packageNumber++;
+                GalileoTagDecoder.setMonitoringPackageData(monitoringPackage,tag, byteBuf);
+                int nextTag = byteBuf.getUnsignedByte(byteBuf.readerIndex());
+                if (nextTag == firstTagInPackage && packageNumber != 1 && byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
+                    monitoringPackages.add(monitoringPackage);
+                    monitoringPackage = new MonitoringPackage();
+                }
             }
+            monitoringPackages.add(monitoringPackage);
+            ByteBuf responseBuf = createResponse(byteBuf);
+            return new DecodedResultPacket(monitoringPackages, responseBuf);
+        } finally {
+            byteBuf.release();
         }
-        monitoringPackages.add(monitoringPackage);
-        ByteBuf responseBuf = createResponse(byteBuf);
-        byteBuf.release();
-        return new DecodedResultPacket(monitoringPackages, responseBuf);
     }
 
     private ByteBuf createResponse(ByteBuf byteBuf) {
