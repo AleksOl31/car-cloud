@@ -31,17 +31,17 @@ public class BaseNettyServer implements Runnable {
     private int soTimeout;
     @Value("${terminal.server.galileo-port}")
     private int galileoPort;
-    @Value("${terminal.server.scout-port}")
-    private int scoutPort;
+//    @Value("${terminal.server.scout-port}")
+//    private int scoutPort;
     private final PackageParser galileoPackageParser;
-    private final PackageParser scoutPackageParser;
+//    private final PackageParser scoutPackageParser;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
 
 
     public BaseNettyServer(PackageParser galileoPackageParser, TerminalMessageService terminalMessageService, ItemService itemService) {
         this.galileoPackageParser = galileoPackageParser;
-        this.scoutPackageParser = galileoPackageParser;
+//        this.scoutPackageParser = galileoPackageParser;
         this.itemService = itemService;
         this.terminalMessageService = terminalMessageService;
     }
@@ -51,12 +51,12 @@ public class BaseNettyServer implements Runnable {
         boss = new NioEventLoopGroup(1);
         worker = new NioEventLoopGroup();
         try {
+            // server started!
             ServerBootstrap galileoBootstrap = getServerBootstrap(boss, worker, galileoPackageParser);
             ChannelFuture galFuture = galileoBootstrap.bind(galileoPort).sync();
 
-            // server started!
-            ServerBootstrap scoutBootstrap = getServerBootstrap(boss, worker, scoutPackageParser);
-            ChannelFuture sctFuture = scoutBootstrap.bind(scoutPort).sync();
+//            ServerBootstrap scoutBootstrap = getServerBootstrap(boss, worker, scoutPackageParser);
+//            ChannelFuture sctFuture = scoutBootstrap.bind(scoutPort).sync();
 
             // server started!
             channelFuture = galFuture;

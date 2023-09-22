@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.util.ReferenceCountUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
@@ -29,16 +30,21 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof DecodedResultPacket) {
-            DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
-            if (isAuthorized) {
-                saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
+        try {
+            if (msg instanceof DecodedResultPacket) {
+                DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
+                if (isAuthorized) {
+                    saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
+                } else {
+                    login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
+                }
+                sendResponse(ctx, decodedResultPacket.getResponse());
+                ReferenceCountUtil.release(decodedResultPacket);
             } else {
-                login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
+                throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
             }
-            sendResponse(ctx, decodedResultPacket.getResponse());
-        } else {
-            throw new UnsupportedMessageTypeException("Data received on an unsupported protocol");
+        } finally {
+            ReferenceCountUtil.release(msg);
         }
     }
 
