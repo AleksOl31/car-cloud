@@ -9,6 +9,7 @@
     <img src="/images/truck_PNG.png" th:src="@{/images/truck_PNG.png}" alt="Oka"/>
     <h1>Сервер CarCloud АО "Лебединский ГОК"</h1>
     <form action="/home" method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
         <p>Сервер CarCloud <span th:text="${state}">остновлен</span>
             <button type="submit" th:text="${actionName}">Запустить</button></p>
     </form>

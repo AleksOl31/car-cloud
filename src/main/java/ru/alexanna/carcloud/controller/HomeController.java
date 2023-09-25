@@ -22,13 +22,13 @@ public class HomeController {
 
     @PostMapping("/home")
     public String changeState(Model model) {
-        log.debug("POST");
+        log.info("Terminal server state change running...");
         if (serverState.isRunning()){
             serverState.stop();
-            log.debug("STOPPED");
+            log.info("Terminal server has stopped");
         } else {
             serverState.run();
-            log.debug("RUN");
+            log.info("Terminal server is running");
         }
         setModelAttributes(model);
         return "home";

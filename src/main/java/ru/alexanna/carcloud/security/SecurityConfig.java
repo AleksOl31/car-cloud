@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -26,8 +25,18 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
         List<UserDetails> userList = new ArrayList<>();
-        userList.add(new User("admin", encoder.encode("admin"),
-                Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+        userList.add(new User("carcloud", encoder.encode("w=0h&qv[u8FGPW#c"),
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
         return new InMemoryUserDetailsManager(userList);
     }
+
+/*    @Bean
+    public UserDetailsService userDetailsService(UserRepository userRepo) {
+        return username -> {
+            User user = userRepo.findByUsername(username);
+            if (user != null)
+                return user;
+            throw new UsernameNotFoundException("User '" + username + "' not found");
+        };
+    }*/
 }
