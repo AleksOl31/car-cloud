@@ -14,13 +14,13 @@ import ru.alexanna.carcloud.service.terminal.server.ServerState;
 public class HomeController {
     private ServerState serverState;
 
-    @GetMapping("/home")
+    @GetMapping("/admin")
     public String home(Model model) {
         setModelAttributes(model);
-        return "home";
+        return "admin";
     }
 
-    @PostMapping("/home")
+    @PostMapping("/admin")
     public String changeState(Model model) {
         log.info("Terminal server state change running...");
         if (serverState.isRunning()){
@@ -31,7 +31,7 @@ public class HomeController {
             log.info("Terminal server is running");
         }
         setModelAttributes(model);
-        return "home";
+        return "admin";
     }
 
     private void setModelAttributes(Model model) {
