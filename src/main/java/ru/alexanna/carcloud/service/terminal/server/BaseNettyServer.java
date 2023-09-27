@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.util.ResourceLeakDetector;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,8 @@ public class BaseNettyServer implements Runnable {
 //        this.scoutPackageParser = galileoPackageParser;
         this.itemService = itemService;
         this.terminalMessageService = terminalMessageService;
+        // FIXME: 06.06.2023 Добавлено в виде опции JVM: -Dio.netty.leakDetectionLevel=advanced
+//        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
     }
 
     @Override

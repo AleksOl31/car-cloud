@@ -73,7 +73,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ctx.flush();
 
         if (channelsMap.get(ctx.channel()) != null)
-            log.info("Data received from device with IMEI {}, name {} and address {} ",
+            log.info("Data received from device with IMEI {}, name '{}' and address {} ",
                     channelsMap.get(ctx.channel()).getImei(),
                     channelsMap.get(ctx.channel()).getName(),
                     ctx.channel().remoteAddress());
