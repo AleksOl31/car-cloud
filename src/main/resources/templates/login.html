@@ -3,24 +3,33 @@
       xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-<h1>Пожалуйста, зарегистрируйтесь</h1>
-<div th:if="${param.error}">
-    Неверное имя пользователя и пароль.
-</div>
-<div th:if="${param.logout}">
-    Вы вышли из системы.
-</div>
-<form th:action="@{/login}" method="post">
-    <div>
-        <input type="text" name="username" placeholder="Имя пользователя"/>
+
+<div class="center">
+
+    <h1 class="heading1">Пожалуйста, зарегистрируйтесь</h1>
+    <div th:if="${param.error}">
+        Неверное имя пользователя и пароль.
     </div>
-    <div>
-        <input type="password" name="password" placeholder="Пароль"/>
+    <div th:if="${param.logout}">
+        Вы вышли из системы.
     </div>
-    <input type="submit" value="Авторизоваться"/>
-</form>
+
+    <form class="" th:action="@{/login}" method="post">
+        <div>
+            <input class="text-input" type="text" name="username" placeholder="Имя пользователя"/>
+        </div>
+        <div>
+            <input class="text-input" type="password" name="password" placeholder="Пароль"/>
+        </div>
+        <input class="btn" type="submit" value="Авторизоваться"/>
+    </form>
+</div>
+
 </body>
 </html>

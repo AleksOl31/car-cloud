@@ -28,15 +28,18 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
         List<UserDetails> userList = new ArrayList<>();
         userList.add(new User("carcloud", encoder.encode("w=0h&qv[u8FGPW#c"),
-                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+                List.of(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"))));
         return new InMemoryUserDetailsManager(userList);
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+                .csrf()
+                .disable()
+                .authorizeRequests()
                 .antMatchers("/admin")
-                .hasRole("ADMIN")
+                .hasAnyRole("SUPER_ADMIN", "ADMIN")
                 .and()
                 .formLogin()
                 .loginPage("/login")

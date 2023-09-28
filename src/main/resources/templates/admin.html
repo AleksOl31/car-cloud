@@ -3,13 +3,16 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CarCloud</title>
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-    <img src="/images/truck_PNG.png" th:src="@{/images/truck_PNG.png}" alt="Oka"/>
-    <h1>Сервер CarCloud АО "Лебединский ГОК"</h1>
+    <img class="card_img" src="/images/truck_PNG.png" th:src="@{/images/truck_PNG.png}" alt="Oka"/>
+    <h1 class="heading1">Сервер CarCloud АО "Лебединский ГОК"</h1>
     <form action="/admin" method="post">
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+<!--        <input type="hidden" name="_csrf" th:value="${_csrf.token}">-->
         <p>Сервер CarCloud <span th:text="${state}">остновлен</span>
             <button type="submit" th:text="${actionName}">Запустить</button></p>
     </form>
