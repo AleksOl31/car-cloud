@@ -18,7 +18,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private final Map<Channel, Item> channelsMap = new HashMap<>();
+    private Item connectedItem = null;
     private boolean isAuthorized = false;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
@@ -34,7 +34,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof DecodedResultPacket) {
                 DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
                 if (isAuthorized) {
-                    saveMonitoringPackages(ctx, decodedResultPacket.getMonitoringPackages());
+                    saveMonitoringPackages(decodedResultPacket.getMonitoringPackages());
                 } else {
                     login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
                 }
@@ -48,19 +48,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void saveMonitoringPackages(ChannelHandlerContext ctx, List<MonitoringPackage> monitoringPackages) {
-        terminalMessageService.saveAll(monitoringPackages, channelsMap.get(ctx.channel()));
+    private void saveMonitoringPackages(List<MonitoringPackage> monitoringPackages) {
+        terminalMessageService.saveAll(monitoringPackages, connectedItem);
     }
 
     private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
         String receivedImei = monitoringPackage.getRegInfo().getImei();
-        Item registeredItem = itemService.findItem(receivedImei).orElseThrow();
-        registeredItem.setDeviceId(monitoringPackage.getRegInfo().getDeviceId());
-        registeredItem.setHardVer(monitoringPackage.getRegInfo().getHardVer());
-        registeredItem.setSoftVer(monitoringPackage.getRegInfo().getSoftVer());
-        registeredItem.setConnectionState(true);
-        Item savedItem = itemService.save(registeredItem);
-        channelsMap.put(ctx.channel(), savedItem);
+        Item storedItem = itemService.findItem(receivedImei).orElseThrow();
+        storedItem.setDeviceId(monitoringPackage.getRegInfo().getDeviceId());
+        storedItem.setHardVer(monitoringPackage.getRegInfo().getHardVer());
+        storedItem.setSoftVer(monitoringPackage.getRegInfo().getSoftVer());
+        storedItem.setConnectionState(true);
+        storedItem.setRemoteAddress(ctx.channel().remoteAddress().toString());
+        connectedItem = itemService.save(storedItem);
         isAuthorized = true;
     }
 
@@ -72,19 +72,23 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
 
-        if (channelsMap.get(ctx.channel()) != null)
+        if (connectedItem != null)
             log.info("Data received from device with IMEI {}, name '{}' and address {} ",
-                    channelsMap.get(ctx.channel()).getImei(),
-                    channelsMap.get(ctx.channel()).getName(),
+                    connectedItem.getImei(),
+                    connectedItem.getName(),
                     ctx.channel().remoteAddress());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        Item item = channelsMap.remove(ctx.channel());
-        if (item != null) {
-            item.setConnectionState(false);
-            itemService.save(item);
+        if (connectedItem != null) {
+            Item storedItem = itemService.findItem(connectedItem.getImei()).orElse(connectedItem);
+            log.debug("Disconnected address {}, stored address {}", connectedItem.getRemoteAddress(), storedItem.getRemoteAddress());
+            if (connectedItem.getRemoteAddress().equals(storedItem.getRemoteAddress())) {
+                connectedItem.setConnectionState(false);
+                connectedItem.setRemoteAddress(null);
+                itemService.save(connectedItem);
+            }
         }
         log.info("Client disconnected {}", ctx.channel().remoteAddress());
     }

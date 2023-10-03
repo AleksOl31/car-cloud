@@ -32,6 +32,7 @@ public class Item {
     @Column(name = "con_state", nullable = false)
     private Boolean connectionState;
     private String description;
+    private String remoteAddress;
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private Set<TerminalMessage> terminalMessages = new HashSet<>();
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
