@@ -8,24 +8,21 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
-import ru.alexanna.carcloud.dto.MonitoringPackage;
-import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.service.services.ItemService;
 import ru.alexanna.carcloud.service.services.TerminalMessageService;
-
-import java.util.*;
+import ru.alexanna.carcloud.service.terminal.protocol.ReceivedPacketDirector;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private Item connectedItem = null;
-    private boolean isAuthorized = false;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
+    private ReceivedPacketDirector packetDirector;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.info("Client connected with id: {}, R: {}", ctx.channel().id(), ctx.channel().remoteAddress());
+        log.info("New client connected with channel id: {}, address: {}", ctx.channel().id(), ctx.channel().remoteAddress());
+        packetDirector = new ReceivedPacketDirector(terminalMessageService, itemService);
     }
 
     @Override
@@ -33,11 +30,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof DecodedResultPacket) {
                 DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
-                if (isAuthorized) {
-                    saveMonitoringPackages(decodedResultPacket.getMonitoringPackages());
-                } else {
-                    login(ctx, decodedResultPacket.getMonitoringPackages().get(0));
-                }
+                packetDirector.packetConsumer(ctx.channel().remoteAddress(), decodedResultPacket);
                 sendResponse(ctx, decodedResultPacket.getResponse());
                 ReferenceCountUtil.release(decodedResultPacket);
             } else {
@@ -48,22 +41,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void saveMonitoringPackages(List<MonitoringPackage> monitoringPackages) {
-        terminalMessageService.saveAll(monitoringPackages, connectedItem);
-    }
-
-    private void login(ChannelHandlerContext ctx, MonitoringPackage monitoringPackage) {
-        String receivedImei = monitoringPackage.getRegInfo().getImei();
-        Item storedItem = itemService.findItem(receivedImei).orElseThrow();
-        storedItem.setDeviceId(monitoringPackage.getRegInfo().getDeviceId());
-        storedItem.setHardVer(monitoringPackage.getRegInfo().getHardVer());
-        storedItem.setSoftVer(monitoringPackage.getRegInfo().getSoftVer());
-        storedItem.setConnectionState(true);
-        storedItem.setRemoteAddress(ctx.channel().remoteAddress().toString());
-        connectedItem = itemService.save(storedItem);
-        isAuthorized = true;
-    }
-
     private void sendResponse(ChannelHandlerContext ctx, ByteBuf response) {
         ctx.write(response);
     }
@@ -71,25 +48,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
-
-        if (connectedItem != null)
-            log.info("Data received from device with IMEI {}, name '{}' and address {} ",
-                    connectedItem.getImei(),
-                    connectedItem.getName(),
-                    ctx.channel().remoteAddress());
+        packetDirector.logReadOperation(ctx.channel().remoteAddress());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        if (connectedItem != null) {
-            Item storedItem = itemService.findItem(connectedItem.getImei()).orElse(connectedItem);
-            log.debug("Disconnected address {}, stored address {}", connectedItem.getRemoteAddress(), storedItem.getRemoteAddress());
-            if (connectedItem.getRemoteAddress().equals(storedItem.getRemoteAddress())) {
-                connectedItem.setConnectionState(false);
-                connectedItem.setRemoteAddress(null);
-                itemService.save(connectedItem);
-            }
-        }
+        packetDirector.logout();
         log.info("Client disconnected {}", ctx.channel().remoteAddress());
     }
 
