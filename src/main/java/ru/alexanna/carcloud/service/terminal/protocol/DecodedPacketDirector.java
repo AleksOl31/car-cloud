@@ -2,6 +2,9 @@ package ru.alexanna.carcloud.service.terminal.protocol;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.entities.Item;
@@ -11,6 +14,8 @@ import ru.alexanna.carcloud.service.services.TerminalMessageService;
 import java.net.SocketAddress;
 import java.util.List;
 
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
 @RequiredArgsConstructor
 public class DecodedPacketDirector {
@@ -41,6 +46,8 @@ public class DecodedPacketDirector {
         storedItem.setRemoteAddress(address.toString());
         connectedItem = itemService.save(storedItem);
         isAuthorized = true;
+        log.info("The device is registered with IMEI {}, name '{}' and address {}",
+                connectedItem.getImei(), connectedItem.getName(), connectedItem.getRemoteAddress());
     }
 
     public void logout() {

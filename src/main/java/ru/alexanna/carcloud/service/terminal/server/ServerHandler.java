@@ -7,22 +7,20 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.util.ReferenceCountUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
-import ru.alexanna.carcloud.service.services.ItemService;
-import ru.alexanna.carcloud.service.services.TerminalMessageService;
 import ru.alexanna.carcloud.service.terminal.protocol.DecodedPacketDirector;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private final TerminalMessageService terminalMessageService;
-    private final ItemService itemService;
     private DecodedPacketDirector packetDirector;
+    private final ApplicationContext context;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         log.info("New client connected with channel id: {}, address: {}", ctx.channel().id(), ctx.channel().remoteAddress());
-        packetDirector = new DecodedPacketDirector(terminalMessageService, itemService);
+        packetDirector = context.getBean(DecodedPacketDirector.class);
     }
 
     @Override

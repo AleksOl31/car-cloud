@@ -12,10 +12,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import ru.alexanna.carcloud.service.services.ItemService;
-import ru.alexanna.carcloud.service.services.TerminalMessageService;
 import ru.alexanna.carcloud.service.terminal.protocol.PackageParser;
 
 @Service
@@ -34,16 +33,13 @@ public class BaseNettyServer implements Runnable {
 //    @Value("${terminal.server.scout-port}")
 //    private int scoutPort;
     private final PackageParser galileoPackageParser;
-//    private final PackageParser scoutPackageParser;
-    private final TerminalMessageService terminalMessageService;
-    private final ItemService itemService;
+    private final ApplicationContext applicationContext;
 
 
-    public BaseNettyServer(PackageParser galileoPackageParser, TerminalMessageService terminalMessageService, ItemService itemService) {
+    public BaseNettyServer(PackageParser galileoPackageParser, ApplicationContext applicationContext) {
         this.galileoPackageParser = galileoPackageParser;
 //        this.scoutPackageParser = galileoPackageParser;
-        this.itemService = itemService;
-        this.terminalMessageService = terminalMessageService;
+        this.applicationContext = applicationContext;
         // FIXME: 06.06.2023 Добавлено в виде опции JVM: -Dio.netty.leakDetectionLevel=advanced
 //        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
     }
@@ -83,7 +79,7 @@ public class BaseNettyServer implements Runnable {
                         socketChannel.pipeline().addLast(new LoggingHandler());
                         socketChannel.pipeline().addLast(new ReadTimeoutHandler(soTimeout));
                         socketChannel.pipeline().addLast(new GalileoPackageDecoder(packageParser));
-                        socketChannel.pipeline().addLast(new ServerHandler(terminalMessageService, itemService));
+                        socketChannel.pipeline().addLast(new ServerHandler(applicationContext));
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)
