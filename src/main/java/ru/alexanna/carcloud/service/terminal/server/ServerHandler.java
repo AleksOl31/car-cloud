@@ -10,19 +10,19 @@ import lombok.extern.slf4j.Slf4j;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
 import ru.alexanna.carcloud.service.services.ItemService;
 import ru.alexanna.carcloud.service.services.TerminalMessageService;
-import ru.alexanna.carcloud.service.terminal.protocol.ReceivedPacketDirector;
+import ru.alexanna.carcloud.service.terminal.protocol.DecodedPacketDirector;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
-    private ReceivedPacketDirector packetDirector;
+    private DecodedPacketDirector packetDirector;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         log.info("New client connected with channel id: {}, address: {}", ctx.channel().id(), ctx.channel().remoteAddress());
-        packetDirector = new ReceivedPacketDirector(terminalMessageService, itemService);
+        packetDirector = new DecodedPacketDirector(terminalMessageService, itemService);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof DecodedResultPacket) {
                 DecodedResultPacket decodedResultPacket = (DecodedResultPacket) msg;
-                packetDirector.packetConsumer(ctx.channel().remoteAddress(), decodedResultPacket);
+                packetDirector.consumePacket(ctx.channel().remoteAddress(), decodedResultPacket);
                 sendResponse(ctx, decodedResultPacket.getResponse());
                 ReferenceCountUtil.release(decodedResultPacket);
             } else {

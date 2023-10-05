@@ -164,6 +164,9 @@ public class GalileoTagDecoder {
         while (bytesCount < extTagLength) {
             int tagNum = byteBuf.readUnsignedShortLE();
             int tagValue = byteBuf.readIntLE();
+            // FIXME обнуление tagValue в случае обрыва (возможно нужно обрабатывать по-другому)
+            if (tagValue == Integer.MAX_VALUE)
+                tagValue = 0;
             extendedTags.add(tagValue / 100.);
             bytesCount += 6;
         }

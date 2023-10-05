@@ -13,13 +13,13 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ReceivedPacketDirector {
+public class DecodedPacketDirector {
     private Item connectedItem = null;
     private boolean isAuthorized = false;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
 
-    public void packetConsumer(SocketAddress address, DecodedResultPacket packet) {
+    public void consumePacket(SocketAddress address, DecodedResultPacket packet) {
         if (isAuthorized) {
             saveMonitoringPackages(packet.getMonitoringPackages());
         } else {
