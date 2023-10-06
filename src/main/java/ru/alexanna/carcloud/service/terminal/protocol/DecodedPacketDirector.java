@@ -31,7 +31,8 @@ public class DecodedPacketDirector {
         if (isAuthorized) {
             saveMonitoringPackages(packet.getMonitoringPackages());
         } else {
-            login(packet.getMonitoringPackages().get(0));
+            MonitoringPackage registrationPackage = packet.getMonitoringPackages().get(0);
+            login(registrationPackage);
         }
     }
 
@@ -40,7 +41,7 @@ public class DecodedPacketDirector {
     }
 
     private void login(MonitoringPackage registrationPackage) {
-        Item storedItem = findStoredItem(registrationPackage);
+        Item storedItem = findStoredItem(registrationPackage.getRegInfo());
         Item updatedItem = updateItemInfo(storedItem, registrationPackage.getRegInfo());
         connectedItem = itemService.save(updatedItem);
         isAuthorized = true;
@@ -48,8 +49,8 @@ public class DecodedPacketDirector {
                 connectedItem.getImei(), connectedItem.getName(), connectedItem.getRemoteAddress());
     }
 
-    private Item findStoredItem(MonitoringPackage registrationPackage) {
-        String receivedImei = registrationPackage.getRegInfo().getImei();
+    private Item findStoredItem(RegInfo regInfo) {
+        String receivedImei = regInfo.getImei();
         return itemService.findItem(receivedImei).orElseThrow();
     }
 
