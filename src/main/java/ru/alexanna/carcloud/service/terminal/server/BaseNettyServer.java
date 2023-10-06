@@ -1,7 +1,10 @@
 package ru.alexanna.carcloud.service.terminal.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -30,7 +33,7 @@ public class BaseNettyServer implements Runnable {
     private int soTimeout;
     @Value("${terminal.server.galileo-port}")
     private int galileoPort;
-//    @Value("${terminal.server.scout-port}")
+    //    @Value("${terminal.server.scout-port}")
 //    private int scoutPort;
     private final PackageParser galileoPackageParser;
     private final ApplicationContext applicationContext;

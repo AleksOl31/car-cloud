@@ -155,7 +155,8 @@ public class GalileoTagDecoder {
     public static int tagF0_F9(ByteBuf byteBuf) {
         return byteBuf.readIntLE();
     }
-    
+
+    //EXTENDED TAGS
     public static List<Double> tagFE(ByteBuf byteBuf) {
         List<Double> extendedTags = new ArrayList<>();
         int extTagLength = byteBuf.readShortLE();
@@ -164,10 +165,11 @@ public class GalileoTagDecoder {
         while (bytesCount < extTagLength) {
             int tagNum = byteBuf.readUnsignedShortLE();
             int tagValue = byteBuf.readIntLE();
-            // FIXME обнуление tagValue в случае обрыва (возможно нужно обрабатывать по-другому)
-            if (tagValue == Integer.MAX_VALUE)
-                tagValue = 0;
-            extendedTags.add(tagValue / 100.);
+            if (tagValue == Integer.MAX_VALUE) {
+                extendedTags.add(null);
+            } else {
+                extendedTags.add(tagValue / 100.);
+            }
             bytesCount += 6;
         }
 //        byteBuf.skipBytes(extTagLength);

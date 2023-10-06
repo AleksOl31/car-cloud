@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.alexanna.carcloud.dto.DecodedResultPacket;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
+import ru.alexanna.carcloud.dto.RegInfo;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.service.services.ItemService;
 import ru.alexanna.carcloud.service.services.TerminalMessageService;
@@ -23,12 +24,14 @@ public class DecodedPacketDirector {
     private boolean isAuthorized = false;
     private final TerminalMessageService terminalMessageService;
     private final ItemService itemService;
+    private SocketAddress remoteAddress;
 
-    public void consumePacket(SocketAddress address, DecodedResultPacket packet) {
+    public void consumePacket(SocketAddress remoteAddress, DecodedResultPacket packet) {
+        this.remoteAddress = remoteAddress;
         if (isAuthorized) {
             saveMonitoringPackages(packet.getMonitoringPackages());
         } else {
-            login(address, packet.getMonitoringPackages().get(0));
+            login(packet.getMonitoringPackages().get(0));
         }
     }
 
@@ -36,18 +39,27 @@ public class DecodedPacketDirector {
         terminalMessageService.saveAll(monitoringPackages, connectedItem);
     }
 
-    private void login(SocketAddress address, MonitoringPackage monitoringPackage) {
-        String receivedImei = monitoringPackage.getRegInfo().getImei();
-        Item storedItem = itemService.findItem(receivedImei).orElseThrow();
-        storedItem.setDeviceId(monitoringPackage.getRegInfo().getDeviceId());
-        storedItem.setHardVer(monitoringPackage.getRegInfo().getHardVer());
-        storedItem.setSoftVer(monitoringPackage.getRegInfo().getSoftVer());
-        storedItem.setConnectionState(true);
-        storedItem.setRemoteAddress(address.toString());
-        connectedItem = itemService.save(storedItem);
+    private void login(MonitoringPackage registrationPackage) {
+        Item storedItem = findStoredItem(registrationPackage);
+        Item updatedItem = updateItemInfo(storedItem, registrationPackage.getRegInfo());
+        connectedItem = itemService.save(updatedItem);
         isAuthorized = true;
-        log.info("The device is registered with IMEI {}, name '{}' and address {}",
+        log.info("The device is registered with IMEI {}, name '{}' and remote address {}",
                 connectedItem.getImei(), connectedItem.getName(), connectedItem.getRemoteAddress());
+    }
+
+    private Item findStoredItem(MonitoringPackage registrationPackage) {
+        String receivedImei = registrationPackage.getRegInfo().getImei();
+        return itemService.findItem(receivedImei).orElseThrow();
+    }
+
+    private Item updateItemInfo(Item upgradableItem, RegInfo regInfo) {
+        upgradableItem.setDeviceId(regInfo.getDeviceId());
+        upgradableItem.setHardVer(regInfo.getHardVer());
+        upgradableItem.setSoftVer(regInfo.getSoftVer());
+        upgradableItem.setConnectionState(true);
+        upgradableItem.setRemoteAddress(remoteAddress.toString());
+        return upgradableItem;
     }
 
     public void logout() {
