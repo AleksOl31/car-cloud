@@ -1,6 +1,7 @@
 package ru.alexanna.carcloud.entities;
 
 import lombok.*;
+import ru.alexanna.carcloud.dto.RegInfo;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -37,4 +38,20 @@ public class Item {
     private Set<TerminalMessage> terminalMessages = new HashSet<>();
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
     private Set<ItemParameter> parameters = new HashSet<>();
+
+    public void setConnected (String remoteAddress) {
+        connectionState = true;
+        this.remoteAddress = remoteAddress;
+    }
+
+    public void setDisconnected() {
+        connectionState = false;
+        this.remoteAddress = null;
+    }
+
+    public void setRegInfo(RegInfo regInfo) {
+        deviceId = regInfo.getDeviceId();
+        hardVer = regInfo.getHardVer();
+        softVer = regInfo.getSoftVer();
+    }
 }

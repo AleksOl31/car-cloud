@@ -55,21 +55,17 @@ public class DecodedPacketDirector {
     }
 
     private Item updateItemInfo(Item upgradableItem, RegInfo regInfo) {
-        upgradableItem.setDeviceId(regInfo.getDeviceId());
-        upgradableItem.setHardVer(regInfo.getHardVer());
-        upgradableItem.setSoftVer(regInfo.getSoftVer());
-        upgradableItem.setConnectionState(true);
-        upgradableItem.setRemoteAddress(remoteAddress.toString());
+        upgradableItem.setRegInfo(regInfo);
+        upgradableItem.setConnected(remoteAddress.toString());
         return upgradableItem;
     }
 
     public void logout() {
         if (connectedItem != null) {
-            Item storedItem = itemService.findItem(connectedItem.getImei()).orElse(connectedItem);
+            Item storedItem = itemService.findItem(connectedItem.getImei()).orElse(new Item());
             log.debug("Disconnected address {}, stored address {}", connectedItem.getRemoteAddress(), storedItem.getRemoteAddress());
             if (connectedItem.getRemoteAddress().equals(storedItem.getRemoteAddress())) {
-                connectedItem.setConnectionState(false);
-                connectedItem.setRemoteAddress(null);
+                connectedItem.setDisconnected();
                 itemService.save(connectedItem);
             }
         }
