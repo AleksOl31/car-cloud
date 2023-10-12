@@ -2,7 +2,7 @@ package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -16,10 +16,9 @@ import java.util.List;
 @Slf4j
 @Component
 @Qualifier("GALILEO_PARSER")
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class GalileoPackageParser implements PackageParser {
-
-
+private final GalileoTagDecoder tagDecoder;
     @Override
     public DecodedResultPacket parse(ByteBuf byteBuf) {
         try {
@@ -31,7 +30,7 @@ public class GalileoPackageParser implements PackageParser {
             while (byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
                 int tag = byteBuf.readUnsignedByte();
                 packageNumber++;
-                GalileoTagDecoder.setMonitoringPackageData(monitoringPackage,tag, byteBuf);
+                monitoringPackage = tagDecoder.decode(tag, byteBuf, monitoringPackage);
                 int nextTag = byteBuf.getUnsignedByte(byteBuf.readerIndex());
                 if (nextTag == firstTagInPackage && packageNumber != 1 && byteBuf.readerIndex() < (byteBuf.capacity() - 2)) {
                     monitoringPackages.add(monitoringPackage);

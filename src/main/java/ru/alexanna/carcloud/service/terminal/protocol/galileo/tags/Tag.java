@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.service.terminal.protocol.galileo;
+package ru.alexanna.carcloud.service.terminal.protocol.galileo.tags;
 
 public enum Tag {
     HARD_VER(0x01, 1),

@@ -1,4 +1,4 @@
-package ru.alexanna.carcloud.service.terminal.protocol.galileo;
+package ru.alexanna.carcloud.service.terminal.protocol.galileo.tags;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.alexanna.carcloud.service.terminal.protocol.galileo.Tag.*;
+import static ru.alexanna.carcloud.service.terminal.protocol.galileo.tags.Tag.*;
 
 
 

@@ -4,38 +4,43 @@ import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 import ru.alexanna.carcloud.dto.FuelSensor;
 import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.dto.TempSensor;
+import ru.alexanna.carcloud.service.terminal.protocol.galileo.tags.Tag;
+import ru.alexanna.carcloud.service.terminal.protocol.galileo.tags.TagGroup;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
+@Component
 public class GalileoTagDecoder {
 
-    public static Integer tagHARD_VER(ByteBuf byteBuf) {
+    private static Integer tagHARD_VER(ByteBuf byteBuf) {
         return (int) byteBuf.readUnsignedByte();
     }
 
-    public static Integer tagSOFT_VER(ByteBuf byteBuf) {
+    private static Integer tagSOFT_VER(ByteBuf byteBuf) {
         return tagHARD_VER(byteBuf);
     }
 
-    public static String tagIMEI(ByteBuf byteBuf) {
+    private static String tagIMEI(ByteBuf byteBuf) {
         return byteBuf.readCharSequence(Tag.fromCode(0x03).getLength(), StandardCharsets.US_ASCII).toString();
     }
 
-    public static Integer tagDEVICE_ID(ByteBuf byteBuf) {
+    private static Integer tagDEVICE_ID(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
-    public static Integer tagRECORD_NUMBER(ByteBuf byteBuf) {
+    private static Integer tagRECORD_NUMBER(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
-    public static Date tagTIMESTAMP(ByteBuf byteBuf) {
+    private static Date tagTIMESTAMP(ByteBuf byteBuf) {
         long secondsNum = byteBuf.readUnsignedIntLE();
         return new Date(secondsNum * 1000);
     }
@@ -52,7 +57,7 @@ public class GalileoTagDecoder {
 
     }
 
-    public static Location tagLOCATION(ByteBuf byteBuf) {
+    private static Location tagLOCATION(ByteBuf byteBuf) {
         byte firstByte = byteBuf.readByte();
         Integer satellites = firstByte & 0xf;
         int correctness = (firstByte & 0xf0) >> 4;
@@ -69,76 +74,76 @@ public class GalileoTagDecoder {
         private double course;
     }
 
-    public static MotionInfo tagMOTION_INFO(ByteBuf byteBuf) {
+    private static MotionInfo tagMOTION_INFO(ByteBuf byteBuf) {
         double speed = byteBuf.readUnsignedShortLE() / 10.;
         double course = byteBuf.readUnsignedShortLE() / 10.;
         return new MotionInfo(speed, course);
     }
 
-    public static int tagHEIGHT(ByteBuf byteBuf) {
+    private static int tagHEIGHT(ByteBuf byteBuf) {
         return byteBuf.readShortLE();
     }
 
-    public static int tagHDOP(ByteBuf byteBuf) {
+    private static int tagHDOP(ByteBuf byteBuf) {
         return byteBuf.readUnsignedByte();
     }
 
-    public static int tagDEV_STATUS(ByteBuf byteBuf) {
+    private static int tagDEV_STATUS(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
-    public static int tagSUPPLY_VOLTAGE(ByteBuf byteBuf) {
+    private static int tagSUPPLY_VOLTAGE(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
-    public static int tagBATTERY_VOLTAGE(ByteBuf byteBuf) {
+    private static int tagBATTERY_VOLTAGE(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
-    public static int tagDEVICE_TEMP(ByteBuf byteBuf) {
+    private static int tagDEVICE_TEMP(ByteBuf byteBuf) {
         return byteBuf.readByte();
     }
 
-    public static int tagUSER(ByteBuf byteBuf) {
+    private static int tagUSER(ByteBuf byteBuf) {
         return byteBuf.readInt();
     }
 
-    public static int tagAnalogInputs(ByteBuf byteBuf) {
+    private static int tagAnalogInputs(ByteBuf byteBuf) {
         return byteBuf.readUnsignedShortLE();
     }
 
-    public static FuelSensor tagRS485WithoutTemp(ByteBuf byteBuf, int tag) {
+    private static FuelSensor tagRS485WithoutTemp(ByteBuf byteBuf, int tag) {
         int fuelLevel = byteBuf.readUnsignedShortLE();
         int address = tag - 0x60;
         return new FuelSensor(address, fuelLevel, -128);
     }
 
-    public static FuelSensor tagRS485WithTemp(ByteBuf byteBuf, int tag) {
+    private static FuelSensor tagRS485WithTemp(ByteBuf byteBuf, int tag) {
         int address = tag - 0x60;
         int fuelLevel = byteBuf.readUnsignedShortLE();
         int fuelTemp = byteBuf.readByte();
         return new FuelSensor(address, fuelLevel, fuelTemp);
     }
 
-    public static TempSensor tagTEMP(ByteBuf byteBuf) {
+    private static TempSensor tagTEMP(ByteBuf byteBuf) {
         int id = byteBuf.readUnsignedByte();
         int temp = byteBuf.readByte();
         return new TempSensor(id, temp);
     }
 
-    public static int tagCAN_8_BIT(ByteBuf byteBuf) {
+    private static int tagCAN_8_BIT(ByteBuf byteBuf) {
         return byteBuf.readByte();
     }
 
-    public static int tagCAN_16_BIT(ByteBuf byteBuf) {
+    private static int tagCAN_16_BIT(ByteBuf byteBuf) {
         return byteBuf.readShortLE();
     }
 
-    public static int tagCAN_32_BIT(ByteBuf byteBuf) {
+    private static int tagCAN_32_BIT(ByteBuf byteBuf) {
         return byteBuf.readIntLE();
     }
 
-    public static List<Double> tagEXTENDED(ByteBuf byteBuf) {
+    private static List<Double> tagEXTENDED(ByteBuf byteBuf) {
         List<Double> extendedTags = new ArrayList<>();
         int extTagLength = byteBuf.readShortLE();
         int bytesCount = 0;
@@ -157,11 +162,42 @@ public class GalileoTagDecoder {
         return extendedTags;
     }
 
-
-    public static void setMonitoringPackageData(MonitoringPackage monitoringPackage, int tagCode, ByteBuf byteBuf) {
-        Tag tag = Tag.fromCode(tagCode);
-//        System.out.println(TagGroup.fromCode(tagCode) + " " + tag);
-        switch (tag) {
+    public MonitoringPackage decode(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (TagGroup.fromCode(tagCode)) {
+            case REG_INFO:
+               return getRegInfo(tagCode, byteBuf, monitoringPackage);
+            case DEVICE_INFO:
+                return getDeviceInfo(tagCode, byteBuf, monitoringPackage);
+            case NAVIGATION_INFO:
+                return getNavigationInfo(tagCode, byteBuf, monitoringPackage);
+            case ANALOG_INPUTS:
+                return getAnalogInputs(tagCode, byteBuf, monitoringPackage);
+            case DIGITAL_PORTS:
+                return getDigitalPorts(tagCode, byteBuf, monitoringPackage);
+            case WIRE_1:
+                return get1Wire(tagCode, byteBuf, monitoringPackage);
+            case DS1923:
+                return getDS1923(tagCode, byteBuf, monitoringPackage);
+            case CAN_STANDARD:
+                return getCanStandard(tagCode, byteBuf, monitoringPackage);
+            case CAN_8_BIT:
+                return getCan8Bit(tagCode, byteBuf, monitoringPackage);
+            case CAN_16_BIT:
+                return getCan16Bit(tagCode, byteBuf, monitoringPackage);
+            case CAN_32_BIT:
+                return getCan32Bit(tagCode, byteBuf, monitoringPackage);
+            case ADDITIONAL:
+                return getAdditional(tagCode, byteBuf, monitoringPackage);
+            case USER_TAGS:
+                return getUserTags(tagCode, byteBuf, monitoringPackage);
+            case EXTENDED_TAGS:
+                return getExtendedTags(tagCode, byteBuf, monitoringPackage);
+            default:
+                throw new IllegalArgumentException("Invalid tag code: " + Integer.toHexString(tagCode));
+        }
+    }
+    private MonitoringPackage getRegInfo(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case HARD_VER:
                 monitoringPackage.getRegInfo().setHardVer(GalileoTagDecoder.tagHARD_VER(byteBuf));
                 break;
@@ -174,12 +210,39 @@ public class GalileoTagDecoder {
             case DEVICE_ID:
                 monitoringPackage.getRegInfo().setDeviceId(GalileoTagDecoder.tagDEVICE_ID(byteBuf));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+
+    private MonitoringPackage getDeviceInfo(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case RECORD_NUMBER:
                 monitoringPackage.getDeviceInfo().setRecordNum(GalileoTagDecoder.tagRECORD_NUMBER(byteBuf));
                 break;
             case TIMESTAMP:
                 monitoringPackage.setCreatedAt(GalileoTagDecoder.tagTIMESTAMP(byteBuf));
                 break;
+            case DEVICE_STATUS:
+                monitoringPackage.getDeviceInfo().setStatus(GalileoTagDecoder.tagDEV_STATUS(byteBuf));
+                break;
+            case SUPPLY_VOLTAGE:
+                monitoringPackage.getDeviceInfo().setSupplyVol(GalileoTagDecoder.tagSUPPLY_VOLTAGE(byteBuf));
+                break;
+            case BATTERY_VOLTAGE:
+                monitoringPackage.getDeviceInfo().setBatteryVol(GalileoTagDecoder.tagBATTERY_VOLTAGE(byteBuf));
+                break;
+            case DEVICE_TEMP:
+                monitoringPackage.getDeviceInfo().setDeviceTemp(GalileoTagDecoder.tagDEVICE_TEMP(byteBuf));
+                break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getNavigationInfo(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case LOCATION:
                 GalileoTagDecoder.Location location = GalileoTagDecoder.tagLOCATION(byteBuf);
                 monitoringPackage.getNavigationInfo().setLatitude(location.getLatitude());
@@ -205,18 +268,13 @@ public class GalileoTagDecoder {
                         monitoringPackage.getNavigationInfo().setHdop(dop * 10.);
                 }
                 break;
-            case DEVICE_STATUS:
-                monitoringPackage.getDeviceInfo().setStatus(GalileoTagDecoder.tagDEV_STATUS(byteBuf));
-                break;
-            case SUPPLY_VOLTAGE:
-                monitoringPackage.getDeviceInfo().setSupplyVol(GalileoTagDecoder.tagSUPPLY_VOLTAGE(byteBuf));
-                break;
-            case BATTERY_VOLTAGE:
-                monitoringPackage.getDeviceInfo().setBatteryVol(GalileoTagDecoder.tagBATTERY_VOLTAGE(byteBuf));
-                break;
-            case DEVICE_TEMP:
-                monitoringPackage.getDeviceInfo().setDeviceTemp(GalileoTagDecoder.tagDEVICE_TEMP(byteBuf));
-                break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getAnalogInputs(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case ANALOG_INPUT_0:
             case ANALOG_INPUT_1:
             case ANALOG_INPUT_2:
@@ -233,6 +291,13 @@ public class GalileoTagDecoder {
             case ANALOG_INPUT_13:
                 monitoringPackage.getAnalogInputs().add(GalileoTagDecoder.tagAnalogInputs(byteBuf));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getDigitalPorts(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case RS485_0:
             case RS485_1:
             case RS485_2:
@@ -253,6 +318,13 @@ public class GalileoTagDecoder {
             case RS485_15:
                 monitoringPackage.getFuelSensors().add(GalileoTagDecoder.tagRS485WithTemp(byteBuf, tagCode));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage get1Wire(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case TEMP_0:
             case TEMP_1:
             case TEMP_2:
@@ -263,6 +335,41 @@ public class GalileoTagDecoder {
             case TEMP_7:
                 monitoringPackage.getTempSensors().add(GalileoTagDecoder.tagTEMP(byteBuf));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getDS1923(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+/*        switch (Tag.fromCode(tagCode)) {
+            case DS1923_0:
+            case DS1923_1:
+            case DS1923_2:
+            case DS1923_3:
+            case DS1923_4:
+            case DS1923_5:
+            case DS1923_6:
+            case DS1923_7:
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }*/
+        byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        return monitoringPackage;
+    }
+    private MonitoringPackage getCanStandard(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+/*        switch (Tag.fromCode(tagCode)) {
+            case CAN_A0:
+            case CAN_A1:
+            case CAN_B0:
+            case CAN_B1:
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }*/
+        byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        return monitoringPackage;
+    }
+    private MonitoringPackage getCan8Bit(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case CAN_8_BIT_R0:
             case CAN_8_BIT_R1:
             case CAN_8_BIT_R2:
@@ -296,6 +403,13 @@ public class GalileoTagDecoder {
             case CAN_8_BIT_R30:
                 monitoringPackage.getCan8BitList().add(GalileoTagDecoder.tagCAN_8_BIT(byteBuf));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getCan16Bit(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case CAN_16_BIT_R0:
             case CAN_16_BIT_R1:
             case CAN_16_BIT_R2:
@@ -313,6 +427,13 @@ public class GalileoTagDecoder {
             case CAN_16_BIT_R14:
                 monitoringPackage.getCan16BitList().add(GalileoTagDecoder.tagCAN_16_BIT(byteBuf));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getCan32Bit(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case CAN_32_BIT_R0:
             case CAN_32_BIT_R1:
             case CAN_32_BIT_R2:
@@ -330,6 +451,22 @@ public class GalileoTagDecoder {
             case CAN_32_BIT_R14:
                 monitoringPackage.getCan32BitList().add(GalileoTagDecoder.tagCAN_32_BIT(byteBuf));
                 break;
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
+    private MonitoringPackage getAdditional(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+/*        switch (Tag.fromCode(tagCode)) {
+
+            default:
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }*/
+        byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        return monitoringPackage;
+    }
+    private MonitoringPackage getUserTags(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        switch (Tag.fromCode(tagCode)) {
             case USER_0:
             case USER_1:
             case USER_2:
@@ -340,13 +477,17 @@ public class GalileoTagDecoder {
             case USER_7:
                 monitoringPackage.getUserTags().add(GalileoTagDecoder.tagUSER(byteBuf));
                 break;
-            case EXTENDED:
-                monitoringPackage.getExtendedTags().addAll(GalileoTagDecoder.tagEXTENDED(byteBuf));
-                break;
             default:
-                byteBuf.skipBytes(tag.getLength());
+                byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
         }
+        return monitoringPackage;
     }
-
-
+    private MonitoringPackage getExtendedTags(int tagCode, ByteBuf byteBuf, MonitoringPackage monitoringPackage) {
+        if (Tag.fromCode(tagCode) == Tag.EXTENDED) {
+            monitoringPackage.getExtendedTags().addAll(GalileoTagDecoder.tagEXTENDED(byteBuf));
+        } else {
+            byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
+        }
+        return monitoringPackage;
+    }
 }
