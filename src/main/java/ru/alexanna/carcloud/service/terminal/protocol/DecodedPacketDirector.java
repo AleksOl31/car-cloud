@@ -14,6 +14,7 @@ import ru.alexanna.carcloud.service.services.TerminalMessageService;
 
 import java.net.SocketAddress;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -51,7 +52,8 @@ public class DecodedPacketDirector {
 
     private Item findStoredItem(RegInfo regInfo) {
         String receivedImei = regInfo.getImei();
-        return itemService.findItem(receivedImei).orElseThrow();
+        return itemService.findItem(receivedImei).orElseThrow(() ->
+                new NoSuchElementException("This item is not registered"));
     }
 
     private Item updateItemInfo(Item upgradableItem, RegInfo regInfo) {
