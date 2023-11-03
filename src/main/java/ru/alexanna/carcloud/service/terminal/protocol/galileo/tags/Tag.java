@@ -156,6 +156,7 @@ public enum Tag {
     USER_5(0xE7, 4),
     USER_6(0xE8, 4),
     USER_7(0xE9, 4),
+    USER_ARRAY(0xEA, null),
     EXTENDED(0xFE, null);
 
     private final Integer code, length;

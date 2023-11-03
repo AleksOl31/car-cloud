@@ -3,11 +3,7 @@ package ru.alexanna.carcloud.service.terminal.protocol.galileo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-class GalileoPackageParserTest {
+class GalileoPackageParserTests {
 
     @Test
     @Timeout(1)

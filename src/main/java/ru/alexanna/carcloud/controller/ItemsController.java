@@ -9,21 +9,23 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.alexanna.carcloud.dto.ItemDto;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.ItemParameter;
+import ru.alexanna.carcloud.service.Observable;
+import ru.alexanna.carcloud.service.Observer;
 import ru.alexanna.carcloud.service.services.ItemService;
 import ru.alexanna.carcloud.service.services.MappingUtils;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "api/v1", produces = "application/json")
 @RequiredArgsConstructor
-public class ItemsController {
+public class ItemsController implements Observable {
     private final ItemService itemService;
     private final MappingUtils mappingUtils;
+
+    private final List<Observer> observers = new ArrayList<>();
 
     @GetMapping("/items")
     public Iterable<ItemDto> findAllItems() {
@@ -70,6 +72,7 @@ public class ItemsController {
         }
         try {
             Item patchedItem = itemService.save(item);
+            notifyObservers(id);
             return mappingUtils.mapToItemDto(patchedItem);
         } catch (DataIntegrityViolationException e) {
             String errorMsg = Objects.nonNull(e.getRootCause()) ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage();
@@ -82,8 +85,26 @@ public class ItemsController {
     public void deleteItem(@PathVariable Long id) {
         try {
             itemService.deleteItem(id);
+            notifyObservers(id);
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not deleted because missing");
+        }
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(Long id) {
+        for (Observer observer: observers) {
+            observer.updateItem(id);
         }
     }
 }

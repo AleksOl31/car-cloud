@@ -13,10 +13,6 @@ public class UserTagsDecoder extends TagGroupDecoder {
 
     @Override
     public MonitoringPackage decode(ByteBuf byteBuf) {
-        return getUserTags(byteBuf);
-    }
-
-    private MonitoringPackage getUserTags(ByteBuf byteBuf) {
         switch (Tag.fromCode(tagCode)) {
             case USER_0:
             case USER_1:
@@ -28,13 +24,22 @@ public class UserTagsDecoder extends TagGroupDecoder {
             case USER_7:
                 sourceMonitoringPackage.getUserTags().add(tagUSER(byteBuf));
                 break;
+            case USER_ARRAY:
+                tagUSER_ARRAY(byteBuf);
+                break;
             default:
                 byteBuf.skipBytes(Tag.fromCode(tagCode).getLength());
         }
         return sourceMonitoringPackage;
     }
 
+
     private static int tagUSER(ByteBuf byteBuf) {
-        return byteBuf.readInt();
+        return byteBuf.readIntLE();
+    }
+
+    private void tagUSER_ARRAY(ByteBuf byteBuf) {
+        short arrayLength = byteBuf.readUnsignedByte();
+        byteBuf.skipBytes(arrayLength);
     }
 }

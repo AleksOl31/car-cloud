@@ -6,8 +6,8 @@ import ru.alexanna.carcloud.service.terminal.protocol.galileo.tags.decoders.*;
 
 abstract public class TagGroupDecoder {
 
-    protected int tagCode;
-    protected MonitoringPackage sourceMonitoringPackage;
+    protected final int tagCode;
+    protected final MonitoringPackage sourceMonitoringPackage;
 
     public abstract MonitoringPackage decode(ByteBuf byteBuf);
 
