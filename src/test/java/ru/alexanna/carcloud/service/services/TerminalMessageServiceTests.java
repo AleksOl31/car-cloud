@@ -20,20 +20,17 @@ public class TerminalMessageServiceTests {
 
     @BeforeAll
     public static void setTerminalMessages() {
-        Double[] tags0 = {5., 5., 5., 6., 6., 6.};
-        Double[] tags1 = {6., 6., 6., 0., 7., 7.};
-        Double[] tags2 = {7., 7., 7., 8., 9., 9.};
         TerminalMessage terminalMessage0 = TerminalMessage.builder()
                 .id(1L)
-                .extendedTags(Arrays.asList(tags0))
+                .extendedTags(Arrays.asList(5., 5., 5., 6., 6., 6.))
                 .build();
         TerminalMessage terminalMessage1 = TerminalMessage.builder()
                 .id(2L)
-                .extendedTags(Arrays.asList(tags1))
+                .extendedTags(Arrays.asList(6., 6., 6., 0., 7., 7.))
                 .build();
         TerminalMessage terminalMessage2 = TerminalMessage.builder()
                 .id(3L)
-                .extendedTags(Arrays.asList(tags2))
+                .extendedTags(Arrays.asList(7., 7., 7., 8., 9., 9.))
                 .build();
         terminalMessages.add(terminalMessage0);
         terminalMessages.add(terminalMessage1);
