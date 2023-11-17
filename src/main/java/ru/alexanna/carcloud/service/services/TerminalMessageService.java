@@ -65,12 +65,42 @@ public class TerminalMessageService {
         return findTerminalMessages(itemId, timeFrom, timeTo);
     }
 
+    public List<MonitoringPackage> findTerminalMessagesLastMinute(Long itemId) {
+        long timeTo = System.currentTimeMillis();
+        long timeFrom = timeTo - 60 * 1000;
+        return findTerminalMessages(itemId, timeFrom, timeTo);
+    }
+
     public List<MonitoringPackage> findTerminalMessages(Long itemId, Long timeFrom, Long timeTo) {
         Date tFrom = new Date(timeFrom);
         Date tTo = new Date(timeTo);
         List<TerminalMessage> terminalMessages = terminalMessageRepository
                 .findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(itemId, tFrom, tTo);
         return mapToMonitoringPackages(terminalMessages);
+    }
+
+    //FIXME: it is necessary to implement a filtering function
+    public List<TerminalMessage> filterOutNullValues(List<TerminalMessage> terminalMessages) {
+        for (int i = 0; i < terminalMessages.size(); i++) {
+            List<Double> extendedTags = terminalMessages.get(i).getExtendedTags();
+            for (int j = 0; j < extendedTags.size(); j++) {
+                if (extendedTags.get(j).equals(0.0)) {
+                    double previousVal, nextVal;
+                    if (i > 0 && i < terminalMessages.size() - 1) {
+                        previousVal = terminalMessages.get(i - 1).getExtendedTags().get(j);
+                        nextVal = terminalMessages.get(i + 1).getExtendedTags().get(j);
+                        if (previousVal > 0 && nextVal > 0) {
+                            if (previousVal > 2) {
+                                double newValue = previousVal + (nextVal - previousVal) / 2;
+                                extendedTags.set(j, newValue);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        return terminalMessages;
     }
 
     private List<MonitoringPackage> mapToMonitoringPackages(List<TerminalMessage> terminalMessages) {

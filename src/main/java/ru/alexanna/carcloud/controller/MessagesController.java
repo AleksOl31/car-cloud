@@ -18,6 +18,11 @@ public class MessagesController {
         return terminalMessageService.findTerminalMessagesLastHour(itemId);
     }
 
+    @GetMapping("/load-last-minute/{itemId}")
+    public Iterable<MonitoringPackage> loadMessagesLastMinute(@PathVariable Long itemId) {
+        return terminalMessageService.findTerminalMessagesLastMinute(itemId);
+    }
+
     @GetMapping("/{itemId}")
     public Iterable<MonitoringPackage> loadMessagesInterval(@PathVariable Long itemId, @RequestParam Long timeFrom, @RequestParam Long timeTo) {
         return terminalMessageService.findTerminalMessages(itemId, timeFrom, timeTo);
