@@ -79,24 +79,29 @@ public class TerminalMessageService {
         return mapToMonitoringPackages(terminalMessages);
     }
 
-    //FIXME: it is necessary to implement a filtering function
-    public List<TerminalMessage> filterOutNullValues(List<TerminalMessage> terminalMessages) {
+    public List<TerminalMessage> filterOutNullValues(List<TerminalMessage> terminalMessages, double filterThreshold) {
         for (int i = 0; i < terminalMessages.size(); i++) {
             List<Double> extendedTags = terminalMessages.get(i).getExtendedTags();
             for (int j = 0; j < extendedTags.size(); j++) {
-                if (extendedTags.get(j).equals(0.0)) {
-                    double previousVal, nextVal;
-                    if (i > 0 && i < terminalMessages.size() - 1) {
-                        previousVal = terminalMessages.get(i - 1).getExtendedTags().get(j);
-                        nextVal = terminalMessages.get(i + 1).getExtendedTags().get(j);
+                if (extendedTags.get(j).equals(0.0) && terminalMessages.size() > 1) {
+                    if (i == 0) {
+                        final double nextVal = terminalMessages.get(i + 1).getExtendedTags().get(j);
+                        if (Math.abs(nextVal) > filterThreshold)
+                            extendedTags.set(j, nextVal);
+                    } else if (i < terminalMessages.size() - 1) {
+                        final double previousVal = terminalMessages.get(i - 1).getExtendedTags().get(j);
+                        final double nextVal = terminalMessages.get(i + 1).getExtendedTags().get(j);
                         if (previousVal > 0 && nextVal > 0) {
-                            if (previousVal > 2) {
+                            if (previousVal > filterThreshold && nextVal > filterThreshold) {
                                 double newValue = previousVal + (nextVal - previousVal) / 2;
                                 extendedTags.set(j, newValue);
                             }
                         }
+                    } else {
+                        final double previousVal = terminalMessages.get(i - 1).getExtendedTags().get(j);
+                        if (Math.abs(previousVal) > filterThreshold)
+                            extendedTags.set(j, previousVal);
                     }
-
                 }
             }
         }
