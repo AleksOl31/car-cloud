@@ -90,7 +90,7 @@ public class InetConnectionTestService {
     public void start() {
         inetTestTimer = new Timer("InetTestingTimer", true);
         TimerTask inetTestingTask = createInetTestingTask();
-        inetTestTimer.scheduleAtFixedRate(inetTestingTask,1000, testPeriod);
+        inetTestTimer.scheduleAtFixedRate(inetTestingTask, 1000, testPeriod);
         log.info("Inet testing timer started at {}", new Date());
     }
 

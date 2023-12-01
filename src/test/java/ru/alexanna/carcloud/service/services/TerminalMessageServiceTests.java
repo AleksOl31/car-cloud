@@ -64,10 +64,10 @@ public class TerminalMessageServiceTests {
     @DisplayName("Filtering values equal zero inside the list")
     public void filteringZeroValuesInsideTheList() {
         setTerminalMessages();
-        List<TerminalMessage> filteringTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
+        List<TerminalMessage> filteredTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
 
         List<Double> expectedList = Arrays.asList(8.,8.,7.,6.,6.);
-        List<Double> actualList = getResultDataList(filteringTerminalMessages);
+        List<Double> actualList = getResultDataList(filteredTerminalMessages);
 
         Assertions.assertEquals(expectedList, actualList);
     }
@@ -88,10 +88,10 @@ public class TerminalMessageServiceTests {
     @DisplayName("Filtering two values list")
     public void filteringTwoValueList() {
         setTwoTerminalMessage();
-        List<TerminalMessage> filteringTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
+        List<TerminalMessage> filteredTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
 
         List<Double> expectedList = Arrays.asList(4.,4.);
-        List<Double> actualList = getResultDataList(filteringTerminalMessages);
+        List<Double> actualList = getResultDataList(filteredTerminalMessages);
 
         Assertions.assertEquals(expectedList, actualList);
     }

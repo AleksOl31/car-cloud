@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.entities.Item;
 import ru.alexanna.carcloud.entities.TerminalMessage;
-import ru.alexanna.carcloud.dto.MonitoringPackage;
 import ru.alexanna.carcloud.repositories.TerminalMessageRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -76,36 +79,43 @@ public class TerminalMessageService {
         Date tTo = new Date(timeTo);
         List<TerminalMessage> terminalMessages = terminalMessageRepository
                 .findTerminalMessagesByItemIdAndCreatedAtBetweenOrderByCreatedAtDesc(itemId, tFrom, tTo);
-        return mapToMonitoringPackages(terminalMessages);
+        List<TerminalMessage> filteredTerminalMessages = filterOutNullValues(terminalMessages, 2);
+        return mapToMonitoringPackages(filteredTerminalMessages);
     }
 
-    public List<TerminalMessage> filterOutNullValues(List<TerminalMessage> terminalMessages, double filterThreshold) {
-        for (int i = 0; i < terminalMessages.size(); i++) {
-            List<Double> extendedTags = terminalMessages.get(i).getExtendedTags();
+    public List<TerminalMessage> filterOutNullValues(List<TerminalMessage> messages, double filterThreshold) {
+        for (int i = 0; i < messages.size(); i++) {
+            List<Double> extendedTags = messages.get(i).getExtendedTags();
             for (int j = 0; j < extendedTags.size(); j++) {
-                if (extendedTags.get(j).equals(0.0) && terminalMessages.size() > 1) {
+                if (extendedTags.get(j).equals(0.0) && messages.size() > 1) {
                     if (i == 0) {
-                        final double nextVal = terminalMessages.get(i + 1).getExtendedTags().get(j);
+                        final double nextVal = getNextMsgValue(messages, i, j);
                         if (Math.abs(nextVal) > filterThreshold)
                             extendedTags.set(j, nextVal);
-                    } else if (i < terminalMessages.size() - 1) {
-                        final double previousVal = terminalMessages.get(i - 1).getExtendedTags().get(j);
-                        final double nextVal = terminalMessages.get(i + 1).getExtendedTags().get(j);
-                        if (previousVal > 0 && nextVal > 0) {
-                            if (previousVal > filterThreshold && nextVal > filterThreshold) {
-                                double newValue = previousVal + (nextVal - previousVal) / 2;
-                                extendedTags.set(j, newValue);
-                            }
+                    } else if (i < messages.size() - 1) {
+                        final double previousVal = getPreviousMsgValue(messages, i, j);
+                        final double nextVal = getNextMsgValue(messages, i, j);
+                        if (previousVal > filterThreshold && nextVal > filterThreshold) {
+                            final double newValue = previousVal + (nextVal - previousVal) / 2;
+                            extendedTags.set(j, newValue);
                         }
                     } else {
-                        final double previousVal = terminalMessages.get(i - 1).getExtendedTags().get(j);
+                        final double previousVal = getPreviousMsgValue(messages, i, j);
                         if (Math.abs(previousVal) > filterThreshold)
                             extendedTags.set(j, previousVal);
                     }
                 }
             }
         }
-        return terminalMessages;
+        return messages;
+    }
+
+    private static double getNextMsgValue(List<TerminalMessage> messages, int currentMsgIndex, int currentTagIndex) {
+        return messages.get(currentMsgIndex + 1).getExtendedTags().get(currentTagIndex);
+    }
+
+    private static double getPreviousMsgValue(List<TerminalMessage> messages, int currentMsgIndex, int currentTagIndex) {
+        return messages.get(currentMsgIndex - 1).getExtendedTags().get(currentTagIndex);
     }
 
     private List<MonitoringPackage> mapToMonitoringPackages(List<TerminalMessage> terminalMessages) {
