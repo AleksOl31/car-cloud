@@ -40,6 +40,30 @@ public class TerminalMessageServiceTests {
                 .build());
     }
 
+    private void setTerminalMessagesWithNull() {
+        terminalMessages = new ArrayList<>();
+        terminalMessages.add(TerminalMessage.builder()
+                .id(0L)
+                .extendedTags(Arrays.asList( 35.33, 36.37, 0.0, 41.88, null, 34.11, 40.57, 3.2))
+                .build());
+        terminalMessages.add(TerminalMessage.builder()
+                .id(1L)
+                .extendedTags(Arrays.asList(35.33, 36.37, 0.0, 41.9, null, 34.12, 41.07, 3.2))
+                .build());
+        terminalMessages.add(TerminalMessage.builder()
+                .id(2L)
+                .extendedTags(Arrays.asList(35.32, 36.37, 0.0, null /*41.88*/, null, 34.12, 41.44, 3.21))
+                .build());
+        terminalMessages.add(TerminalMessage.builder()
+                .id(3L)
+                .extendedTags(Arrays.asList(35.32, 36.37, 0.0, 0.0 /*41.9*/, null, 34.11, 40.81, 3.21))
+                .build());
+        terminalMessages.add(TerminalMessage.builder()
+                .id(4L)
+                .extendedTags(Arrays.asList(35.31, 36.37, 0.0, 41.88, null, 34.12, 40.27, 3.2))
+                .build());
+    }
+
     private void setOneTerminalMessage() {
         terminalMessages = new ArrayList<>();
         terminalMessages.add(TerminalMessage.builder()
@@ -58,6 +82,18 @@ public class TerminalMessageServiceTests {
                 .id(1L)
                 .extendedTags(Arrays.asList(5., 5., 5., 4., 6., 6.))
                 .build());
+    }
+
+    @Test
+    @DisplayName("Filtering data with NULL")
+    public void filteringDataWithNullValue() {
+        setTerminalMessagesWithNull();
+        List<TerminalMessage> filteredTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
+
+        List<Double> expectedList = Arrays.asList(41.88, 41.9, null/*41.88*/, 0.0 /*41.9*/, 41.88);
+        List<Double> actualList = getResultDataList(filteredTerminalMessages);
+
+        Assertions.assertEquals(expectedList, actualList);
     }
 
     @Test
