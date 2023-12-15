@@ -56,7 +56,7 @@ public class DecodedPacketDirector implements Observer {
 
     private void login(MonitoringPackage registrationPackage) {
         Item storedItem = findStoredItem(registrationPackage.getRegInfo().getImei());
-        Item updatedItem = setRegAndConnectedInfo(storedItem, registrationPackage.getRegInfo());
+        Item updatedItem = updateRegAndConnectedInfo(storedItem, registrationPackage.getRegInfo());
         connectedItem = itemService.save(updatedItem);
         isAuthorized = true;
         itemsController.addObserver(this);
@@ -69,7 +69,7 @@ public class DecodedPacketDirector implements Observer {
                 new NoSuchElementException("This item is not registered"));
     }
 
-    private Item setRegAndConnectedInfo(Item upgradableItem, RegInfo regInfo) {
+    private Item updateRegAndConnectedInfo(Item upgradableItem, RegInfo regInfo) {
         upgradableItem.setRegInfo(regInfo);
         upgradableItem.setConnected(remoteAddress.toString());
         return upgradableItem;

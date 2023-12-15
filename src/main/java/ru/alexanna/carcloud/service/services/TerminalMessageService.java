@@ -86,18 +86,18 @@ public class TerminalMessageService {
             for (int j = 0; j < extendedTags.size(); j++) {
                 if (Objects.nonNull(extendedTags.get(j)) && extendedTags.get(j).equals(0.0) && messages.size() > 1) {
                     if (i == 0) {
-                        final Double nextVal = getNextMsgValue(messages, i, j);
+                        final Double nextVal = getValueFromMsgExtTag(messages, i+1, j);
                         if (Objects.nonNull(nextVal) && Math.abs(nextVal) > filterThreshold)
                             extendedTags.set(j, nextVal);
                     } else if (i < messages.size() - 1) {
-                        final Double previousVal = getPreviousMsgValue(messages, i, j);
-                        final Double nextVal = getNextMsgValue(messages, i, j);
+                        final Double previousVal = getValueFromMsgExtTag(messages, i-1, j);
+                        final Double nextVal = getValueFromMsgExtTag(messages, i+1, j);
                         if (Objects.nonNull(previousVal) && Objects.nonNull(nextVal) && previousVal > filterThreshold && nextVal > filterThreshold) {
-                            final double newValue = previousVal + (nextVal - previousVal) / 2;
+                            final double newValue = (nextVal + previousVal) / 2;
                             extendedTags.set(j, newValue);
                         }
                     } else {
-                        final Double previousVal = getPreviousMsgValue(messages, i, j);
+                        final Double previousVal = getValueFromMsgExtTag(messages, i-1, j);
                         if (Objects.nonNull(previousVal) && Math.abs(previousVal) > filterThreshold)
                             extendedTags.set(j, previousVal);
                     }
@@ -107,12 +107,12 @@ public class TerminalMessageService {
         return messages;
     }
 
-    private static Double getNextMsgValue(List<TerminalMessage> messages, int currentMsgIndex, int currentTagIndex) {
-        return messages.get(currentMsgIndex + 1).getExtendedTags().get(currentTagIndex);
-    }
-
-    private static Double getPreviousMsgValue(List<TerminalMessage> messages, int currentMsgIndex, int currentTagIndex) {
-        return messages.get(currentMsgIndex - 1).getExtendedTags().get(currentTagIndex);
+    private static Double getValueFromMsgExtTag(List<TerminalMessage> messages, int msgIndex, int tagIndex) {
+        try {
+            return messages.get(msgIndex).getExtendedTags().get(tagIndex);
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     private List<MonitoringPackage> mapToMonitoringPackages(List<TerminalMessage> terminalMessages) {

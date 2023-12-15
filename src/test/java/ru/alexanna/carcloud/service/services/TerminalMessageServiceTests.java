@@ -85,13 +85,13 @@ public class TerminalMessageServiceTests {
     }
 
     @Test
-    @DisplayName("Filtering data with NULL")
+    @DisplayName("Filtering data with NULL value")
     public void filteringDataWithNullValue() {
         setTerminalMessagesWithNull();
         List<TerminalMessage> filteredTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
 
         List<Double> expectedList = Arrays.asList(41.88, 41.9, null/*41.88*/, 0.0 /*41.9*/, 41.88);
-        List<Double> actualList = getResultDataList(filteredTerminalMessages);
+        List<Double> actualList = getActualDataList(filteredTerminalMessages);
 
         Assertions.assertEquals(expectedList, actualList);
     }
@@ -103,7 +103,7 @@ public class TerminalMessageServiceTests {
         List<TerminalMessage> filteredTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
 
         List<Double> expectedList = Arrays.asList(8.,8.,7.,6.,6.);
-        List<Double> actualList = getResultDataList(filteredTerminalMessages);
+        List<Double> actualList = getActualDataList(filteredTerminalMessages);
 
         Assertions.assertEquals(expectedList, actualList);
     }
@@ -115,7 +115,7 @@ public class TerminalMessageServiceTests {
         List<TerminalMessage> filteringTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
 
         List<Double> expectedList = Arrays.asList(0.);
-        List<Double> actualList = getResultDataList(filteringTerminalMessages);
+        List<Double> actualList = getActualDataList(filteringTerminalMessages);
 
         Assertions.assertEquals(expectedList, actualList);
     }
@@ -127,12 +127,12 @@ public class TerminalMessageServiceTests {
         List<TerminalMessage> filteredTerminalMessages = sut.filterOutNullValues(terminalMessages, 2);
 
         List<Double> expectedList = Arrays.asList(4.,4.);
-        List<Double> actualList = getResultDataList(filteredTerminalMessages);
+        List<Double> actualList = getActualDataList(filteredTerminalMessages);
 
         Assertions.assertEquals(expectedList, actualList);
     }
 
-    private List<Double> getResultDataList(List<TerminalMessage> filteringTerminalMessages) {
+    private List<Double> getActualDataList(List<TerminalMessage> filteringTerminalMessages) {
         ArrayList<Double> resultList = new ArrayList<>();
         filteringTerminalMessages.forEach(terminalMessage ->
                 resultList.add(terminalMessage.getExtendedTags().get(3)));
