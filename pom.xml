@@ -10,7 +10,7 @@
     </parent>
     <groupId>ru.alexanna</groupId>
     <artifactId>car-cloud</artifactId>
-    <version>0.0.7-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <name>car-cloud</name>
     <description>car-cloud</description>
     <properties>
